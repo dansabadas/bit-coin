@@ -1,10 +1,12 @@
 ﻿using NBitcoin;
+using NBitcoin.Protocol;
 using QBitNinja.Client;
 using QBitNinja.Client.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ConsoleApp1
@@ -24,8 +26,6 @@ namespace ConsoleApp1
 
             Console.WriteLine(publicKey.GetAddress(Network.Main)); // 18Av7Pm5knLGDu2CCAwVs6fPoy7UhyaC3Z
             Console.WriteLine(publicKey.GetAddress(Network.TestNet)); // mngsQSr4ZomX11Voujush1sifxiBadXvFK
-            // ACK got for mrB8B26dZENEgbjqpC3qsUz2AoJa692yb8: ea99f672b770c0fc78c0126d651bc64f18a030cf251640470be75940f387c138 ea8ca76e06052a63c776e7918621390bfeab359113cb4f00b923112c6d08b893
-            // send back to 2N8hwP1WmJrFF5QWABn38y63uYLhnJYJYTF
 
             var publicKeyHash = publicKey.Hash;
             Console.WriteLine(publicKeyHash); // 18Av7Pm5knLGDu2CCAwVs6fPoy7UhyaC3Z
@@ -170,6 +170,112 @@ namespace ConsoleApp1
 
             ////01.05 Blockchain
             //...........
+            var bitcoinPrivateKey = new BitcoinSecret("cVX7SpYc8yjNW8WzPpiGTqyWD4eM4BBnfqEm9nwGqJb2QiX9hhdf");
+            var network = bitcoinPrivateKey.Network;
+            var address = bitcoinPrivateKey.GetAddress();
+
+            Console.WriteLine(bitcoinPrivateKey); // cVX7SpYc8yjNW8WzPpiGTqyWD4eM4BBnfqEm9nwGqJb2QiX9hhdf
+            Console.WriteLine(address); // mtjeFt6dMKqvQmYKcBAkSX9AmX8qdynVKN - THIS is my public bitcoin testnet address!!!!!!!
+            Console.WriteLine(network);
+
+            //tx IDS: 7a73b2fa89315be9a1292bf817c5e97296cdd14019c112ebbdf2cbfeecc60e7d
+            // 9ed5bc5b2b8c81bcf6585377fb20b4b5b82eb413981d3e01145c7b1c55c3179c
+            // a034c8d913960e1135175f915ad1bb32f2a13270fd73ece1c6d717f2f3d1c2b4
+            // e6beb1f58a14d2fc2dc041329cd09cadd86e364dbc46ebd950228a0740c00b9c
+
+            // transaction inspection:
+            // for test-net http://tapi.qbit.ninja/transactions/9ed5bc5b2b8c81bcf6585377fb20b4b5b82eb413981d3e01145c7b1c55c3179c
+            // or for main-net http://api.qbit.ninja/transactions/....
+
+            client = new QBitNinjaClient(network);
+            transactionId = uint256.Parse("e6beb1f58a14d2fc2dc041329cd09cadd86e364dbc46ebd950228a0740c00b9c");// from this fking string we get all transaction info!
+            transactionResponse = client.GetTransaction(transactionId).Result;
+
+            receivedCoins = transactionResponse.ReceivedCoins;
+            OutPoint outPointToSpend = null;
+            foreach (var coin in receivedCoins)
+            {
+                if (coin.TxOut.ScriptPubKey == bitcoinPrivateKey.ScriptPubKey)
+                {
+                    outPointToSpend = coin.Outpoint;
+                }
+            }
+            if (outPointToSpend == null)
+                throw new Exception("TxOut doesn't contain our ScriptPubKey");
+            Console.WriteLine("We want to spend {0}. outpoint:", outPointToSpend.N + 1);
+
+            Console.WriteLine(transactionResponse.TransactionId); // 9ed5bc5b2b8c81bcf6585377fb20b4b5b82eb413981d3e01145c7b1c55c3179c
+            Console.WriteLine(transactionResponse.Block != null ? transactionResponse.Block.Confirmations.ToString() : "null block");
+
+            transaction = new Transaction();
+
+            TxIn txIn = new TxIn
+            {
+                PrevOut = outPointToSpend
+            };
+            transaction.Inputs.Add(txIn);
+
+            //blockexplorer of addresses or transactions/blocks
+            // https://testnet.blockexplorer.com/address/mzp4No5cmCXjZUpf112B1XWsvWBfws5bbB
+            // https://live.blockcypher.com/btc-testnet/address/mtjeFt6dMKqvQmYKcBAkSX9AmX8qdynVKN/
+            var hallOfTheMakersAddress = BitcoinAddress.Create("mzp4No5cmCXjZUpf112B1XWsvWBfws5bbB");
+
+            TxOut hallOfTheMakersTxOut = new TxOut
+            {
+                Value = new Money(7, MoneyUnit.Satoshi),
+                ScriptPubKey = hallOfTheMakersAddress.ScriptPubKey
+            };
+            var minerFee = new Money(500, MoneyUnit.Satoshi);  // accepts 500!
+            TxOut changeBackTxOut = new TxOut
+            {
+                Value = (Money)receivedCoins[(int)outPointToSpend.N].Amount - hallOfTheMakersTxOut.Value - minerFee,
+                ScriptPubKey = bitcoinPrivateKey.ScriptPubKey
+            };
+            transaction.Outputs.Add(hallOfTheMakersTxOut);
+            transaction.Outputs.Add(changeBackTxOut);
+
+            transaction.Outputs.Add(new TxOut
+            {
+                Value = Money.Zero,
+                ScriptPubKey = TxNullDataTemplate.Instance.GenerateScriptPubKey(Encoding.UTF8.GetBytes("danson loves NBitcoin!"))
+            });
+
+            transaction.Inputs[0].ScriptSig = bitcoinPrivateKey.ScriptPubKey;
+            //transaction.Sign(bitcoinPrivateKey, false);
+            transaction.Sign(bitcoinPrivateKey, false);
+
+            //return;
+
+            // qbit ninja client works
+            BroadcastResponse broadcastResponse = client.Broadcast(transaction).Result;
+
+            if (!broadcastResponse.Success)
+            {
+                Console.Error.WriteLine("ErrorCode: " + broadcastResponse.Error.ErrorCode);
+                Console.Error.WriteLine("Error message: " + broadcastResponse.Error.Reason);
+            }
+            else
+            {
+                Console.WriteLine("Success! You can check out the hash of the transaciton in any block explorer:");
+                Console.WriteLine(transaction.GetHash());
+                // my first successful transactions on testnet!
+                // d9d7e05bf7a1d66bc0324824bf898d2fdd6771b2fc676eaa98efa04bd94312aa
+                // 71d6f6193fc0d0959f47e7d05cc2772ad0493298120d0d7d68000a0b231665eb
+                // 773d6ca5b18b875602f0058435422ed16a150c05fba8d086a599a361227ad047
+                // https://live.blockcypher.com/btc-testnet/tx/d9d7e05bf7a1d66bc0324824bf898d2fdd6771b2fc676eaa98efa04bd94312aa/
+                // https://live.blockcypher.com/btc-testnet/address/mtjeFt6dMKqvQmYKcBAkSX9AmX8qdynVKN/
+            }
+
+            // much slower version - direct library
+            //using (var node = Node.Connect(network)) //Connect to the node
+            //{
+            //    node.VersionHandshake(); //Say hello
+            //                             //Advertize your transaction (send just the hash)
+            //    node.SendMessage(new InvPayload(InventoryType.MSG_TX, transaction.GetHash()));
+            //    //Send it
+            //    node.SendMessage(new TxPayload(transaction));
+            //    Thread.Sleep(500); //Wait a bit
+            //}
         }
     }
 }
