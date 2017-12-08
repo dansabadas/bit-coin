@@ -37,6 +37,87 @@ namespace ConsoleApp1
             //KeyGenerationAndEncryption();
 
             Pay2Sample();
+
+            MultiSig();
+        }
+
+        private static void MultiSig()
+        {
+            Key bob = new Key();
+            Key alice = new Key();
+            Key satoshi = new Key();
+
+            var scriptPubKey = PayToMultiSigTemplate
+                .Instance
+                .GenerateScriptPubKey(2, new[] { bob.PubKey, alice.PubKey, satoshi.PubKey });
+
+            Console.WriteLine(scriptPubKey);
+
+            // we the group of 3 received 1 bitcoin
+            var received = new Transaction();
+            received.Outputs.Add(new TxOut(Money.Coins(1.0m), scriptPubKey));
+
+            Coin coin = received.Outputs.AsCoins().First();
+
+            BitcoinAddress nico = new Key().PubKey.GetAddress(Network.TestNet);
+            TransactionBuilder builder = new TransactionBuilder();
+            Transaction unsigned =
+                builder
+                  .AddCoins(coin)
+                  .Send(nico, Money.Coins(1.0m))
+                  .BuildTransaction(sign: false);
+
+            Transaction aliceSigned =
+                builder
+                    .AddCoins(coin)
+                    .AddKeys(alice)
+                    .SignTransaction(unsigned);
+
+            Transaction bobSigned =
+                builder
+                    .AddCoins(coin)
+                    .AddKeys(bob)
+                    //At this line, SignTransaction(unSigned) has the identical functionality with the SignTransaction(aliceSigned).
+                    //It's because unsigned transaction has already been signed by Alice privateKey from above.
+                    .SignTransaction(aliceSigned);
+
+            Transaction fullySigned =
+                builder
+                    .AddCoins(coin)
+                    .CombineSignatures(aliceSigned, bobSigned); // optional
+
+            Console.WriteLine(fullySigned); // basically they are identical
+            Console.WriteLine(bobSigned);
+
+            ///
+            //In this case below, the CombineSignatures() method is essentially needed because we don't share the builder.
+            TransactionBuilder builderNew = new TransactionBuilder();
+            TransactionBuilder builderForAlice = new TransactionBuilder();
+            TransactionBuilder builderForBob = new TransactionBuilder();
+
+            Transaction unsignedNew =
+                            builderNew
+                                .AddCoins(coin)
+                                .Send(nico, Money.Coins(1.0m))
+                                .BuildTransaction(sign: false);
+
+
+            aliceSigned =
+                builderForAlice
+                    .AddCoins(coin)
+                    .AddKeys(alice)
+                    .SignTransaction(unsignedNew);
+
+            bobSigned =
+                builderForBob
+                    .AddCoins(coin)
+                    .AddKeys(bob)
+                    .SignTransaction(unsignedNew);
+
+            fullySigned =
+                            builderNew
+                                .AddCoins(coin)
+                                .CombineSignatures(aliceSigned, bobSigned);
         }
 
         private static void Pay2Sample()
@@ -384,7 +465,7 @@ namespace ConsoleApp1
             var network = bitcoinPrivateKeySecret.Network;
             var address = bitcoinPrivateKeySecret.GetAddress();
 
-            Console.WriteLine(bitcoinPrivateKeySecret); // cVX7SpYc8yjNW8WzPpiGTqyWD4eM4BBnfqEm9nwGqJb2QiX9hhdf
+            Console.WriteLine(bitcoinPrivateKeySecret); // cVX7SpYc8yjNW8WzPpiGTqyWD4eM4BBnfqEm9nwGqJb2QiX9hhdf - this is my private testnet
             Console.WriteLine(address);
             // mtjeFt6dMKqvQmYKcBAkSX9AmX8qdynVKN - THIS is my public bitcoin testnet address!!!!!!!
             Console.WriteLine(network);
@@ -400,7 +481,7 @@ namespace ConsoleApp1
 
             var client = new QBitNinjaClient(network);
             var transactionId = uint256.Parse("e6beb1f58a14d2fc2dc041329cd09cadd86e364dbc46ebd950228a0740c00b9c");
-            // from this fking string we get all transaction info!
+            // from this string we get all transaction info!
             var transactionResponse = client.GetTransaction(transactionId).Result;
 
             var receivedCoins = transactionResponse.ReceivedCoins;
@@ -431,8 +512,9 @@ namespace ConsoleApp1
             transaction.Inputs.Add(txIn);
 
             //blockexplorer of addresses or transactions/blocks
+            // https://testnet.manu.backend.hamburg/faucet - load test bitcoins into my account - to show this
             // https://testnet.blockexplorer.com/address/mzp4No5cmCXjZUpf112B1XWsvWBfws5bbB
-            // https://live.blockcypher.com/btc-testnet/address/mtjeFt6dMKqvQmYKcBAkSX9AmX8qdynVKN/
+            // https://live.blockcypher.com/btc-testnet/address/mtjeFt6dMKqvQmYKcBAkSX9AmX8qdynVKN/ -  to present this!
             var hallOfTheMakersAddress = BitcoinAddress.Create("mzp4No5cmCXjZUpf112B1XWsvWBfws5bbB");
 
             TxOut hallOfTheMakersTxOut = new TxOut
