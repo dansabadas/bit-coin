@@ -1,12 +1,12 @@
 ﻿using NBitcoin;
+using NBitcoin.Crypto;
+using NBitcoin.Stealth;
 using QBitNinja.Client;
 using QBitNinja.Client.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using NBitcoin.Crypto;
-using NBitcoin.Stealth;
 
 namespace ConsoleApp1
 {
@@ -29,16 +29,179 @@ namespace ConsoleApp1
             // Transaction();
 
             ////01.05 Blockchain
-            // Blockchain();
+            //Blockchain();
 
             ////01.06 Proof of ownership
             ProofOfOwnership();
 
+            // 02. key gen and enc
             //KeyGenerationAndEncryption();
 
-            Pay2Sample();
+            // 03. other types of ownership
+            //Pay2Sample(); 
 
             MultiSig();
+
+            PayToScriptHash();
+
+            TransactionBuilderSample();
+
+            ProofOfBurnReputation();
+        }
+
+        private static void ProofOfBurnReputation() {
+            var alice = new Key();
+
+            //Giving some money to alice
+            var init = new Transaction()
+            {
+                Outputs =
+                {
+                    new TxOut(Money.Coins(1.0m), alice),
+                }
+            };
+
+            var coin = init.Outputs.AsCoins().First();
+
+            //Burning the coin
+            var burn = new Transaction();
+            burn.Inputs.Add(new TxIn(coin.Outpoint)
+            {
+                ScriptSig = coin.ScriptPubKey
+            }); //Spend the previous coin
+
+            var message = "Burnt for \"Alice Bakery\"";
+            var opReturn = TxNullDataTemplate
+                            .Instance
+                            .GenerateScriptPubKey(Encoding.UTF8.GetBytes(message));
+            burn.Outputs.Add(new TxOut(Money.Coins(1.0m), opReturn));
+            burn.Sign(alice, false);
+
+            Console.WriteLine(burn);
+        }
+
+        private static void TransactionBuilderSample()
+        {
+            // Create a fake transaction
+            var bob = new Key();
+            var alice = new Key();
+
+            Script bobAlice =
+                PayToMultiSigTemplate.Instance.GenerateScriptPubKey(
+                    2,
+                    bob.PubKey, alice.PubKey);
+
+            var init = new Transaction();
+            init.Outputs.Add(new TxOut(Money.Coins(1m), bob.PubKey)); // P2PK
+            init.Outputs.Add(new TxOut(Money.Coins(1m), alice.PubKey.Hash)); // P2PKH
+            init.Outputs.Add(new TxOut(Money.Coins(1m), bobAlice));
+
+            //let’s say they want to use the coins of this transaction to pay Satoshi.
+            var satoshi = new Key();
+
+            Coin[] coins = init.Outputs.AsCoins().ToArray();
+            Coin bobCoin = coins[0];
+            Coin aliceCoin = coins[1];
+            Coin bobAliceCoin = coins[2];
+
+            //let’s say bob wants to sends 0.2 BTC, alice 0.3 BTC, and they agree to use bobAlice to send 0.5 BTC.
+            var builder = new TransactionBuilder();
+            Transaction tx = builder
+                    .AddCoins(bobCoin)
+                    .AddKeys(bob)
+                    .Send(satoshi, Money.Coins(0.2m))
+                    .SetChange(bob)
+                    .Then()
+                    .AddCoins(aliceCoin)
+                    .AddKeys(alice)
+                    .Send(satoshi, Money.Coins(0.3m))
+                    .SetChange(alice)
+                    .Then()
+                    .AddCoins(bobAliceCoin)
+                    .AddKeys(bob, alice)
+                    .Send(satoshi, Money.Coins(0.5m))
+                    .SetChange(bobAlice)
+                    .SendFees(Money.Coins(0.0001m))
+                    .BuildTransaction(sign: true);
+
+            //verify it is fully signed and ready to send to the network.
+            Console.WriteLine(builder.Verify(tx));
+        }
+
+        private static void PayToScriptHash()
+        {
+            //P2SH (Pay To Script Hash)
+            Key bob = new Key();
+            Key alice = new Key();
+            Key satoshi = new Key();
+
+            var scriptPubKey = PayToMultiSigTemplate
+                .Instance
+                .GenerateScriptPubKey(2, new[] { bob.PubKey, alice.PubKey, satoshi.PubKey });
+
+            Console.WriteLine(scriptPubKey);
+
+            var paymentScript = PayToMultiSigTemplate
+                .Instance
+                .GenerateScriptPubKey(2, new[] { bob.PubKey, alice.PubKey, satoshi.PubKey }).PaymentScript;
+
+            Console.WriteLine(paymentScript);   // simpler!
+            Console.WriteLine(paymentScript.Hash.GetAddress(Network.TestNet));
+
+            Script redeemScript = PayToMultiSigTemplate
+                .Instance
+                .GenerateScriptPubKey(2, new[] { bob.PubKey, alice.PubKey, satoshi.PubKey });
+
+            Transaction received = new Transaction();
+            //Pay to the script hash
+            received.Outputs.Add(new TxOut(Money.Coins(1.0m), redeemScript.Hash));
+            //Give the redeemScript to the coin for Transaction construction
+            //and signing
+            ScriptCoin coin = received.Outputs.AsCoins().First().ToScriptCoin(redeemScript);
+
+            // PayToWitnessScriptHash
+            var key = new Key();
+            Console.WriteLine(key.PubKey.ScriptPubKey.WitHash.ScriptPubKey);
+
+            //P2W* over P2SH
+            Console.WriteLine(key.PubKey.WitHash.ScriptPubKey.Hash.ScriptPubKey);
+
+            // arbitrary redeem script
+            BitcoinAddress address = BitcoinAddress.Create("1KF8kUVHK42XzgcmJF4Lxz4wcL5WDL97PB");
+            var birth = Encoding.UTF8.GetBytes("18/07/1988");
+            var birthHash = Hashes.Hash256(birth);
+
+            //This RedeemScript means that there are 2 ways of spending such ScriptCoin: 
+            //Either you know the data that gives birthHash (my birthdate) or you own the bitcoin address.
+            redeemScript = new Script(
+                "OP_IF "
+                    + "OP_HASH256 " + Op.GetPushOp(birthHash.ToBytes()) + " OP_EQUAL " +
+                "OP_ELSE "
+                    + address.ScriptPubKey + " " +
+                "OP_ENDIF");
+
+            var tx = new Transaction();
+            tx.Outputs.Add(new TxOut(Money.Parse("0.0001"), redeemScript.Hash));
+            ScriptCoin scriptCoin = tx.Outputs.AsCoins().First().ToScriptCoin(redeemScript);
+
+            //Create spending transaction
+            Transaction spending = new Transaction();
+            spending.AddInput(new TxIn(new OutPoint(tx, 0)));
+
+            ////Option 1 : Spender knows my birthdate
+            Op pushBirthdate = Op.GetPushOp(birth);
+            Op selectIf = OpcodeType.OP_1; //go to if
+            Op redeemBytes = Op.GetPushOp(redeemScript.ToBytes());
+            Script scriptSig = new Script(pushBirthdate, selectIf, redeemBytes);
+            spending.Inputs[0].ScriptSig = scriptSig;
+
+            //Verify the script pass
+            var result = spending
+                            .Inputs
+                            .AsIndexedInputs()
+                            .First()
+                            .VerifyScript(tx.Outputs[0].ScriptPubKey);
+            Console.WriteLine(result); // True
         }
 
         private static void MultiSig()
@@ -480,8 +643,8 @@ namespace ConsoleApp1
             // or for main-net http://api.qbit.ninja/transactions/....
 
             var client = new QBitNinjaClient(network);
-            var transactionId = uint256.Parse("e6beb1f58a14d2fc2dc041329cd09cadd86e364dbc46ebd950228a0740c00b9c");
-            // from this string we get all transaction info!
+            var transactionId = uint256.Parse("e6beb1f58a14d2fc2dc041329cd09cadd86e364dbc46ebd950228a0740c00b9c");  // see this trans above!
+            // from this string we get all transaction info making a web request!
             var transactionResponse = client.GetTransaction(transactionId).Result;
 
             var receivedCoins = transactionResponse.ReceivedCoins;
@@ -522,7 +685,7 @@ namespace ConsoleApp1
                 Value = new Money(7, MoneyUnit.Satoshi),
                 ScriptPubKey = hallOfTheMakersAddress.ScriptPubKey
             };
-            var minerFee = new Money(500, MoneyUnit.Satoshi); // accepts 500!
+            var minerFee = new Money(500, MoneyUnit.Satoshi); // accepts 500! not 100! show example of rejected out-funds!
             TxOut changeBackTxOut = new TxOut
             {
                 Value = (Money) receivedCoins[(int) outPointToSpend.N].Amount - hallOfTheMakersTxOut.Value - minerFee,
@@ -540,7 +703,7 @@ namespace ConsoleApp1
 
             transaction.Inputs[0].ScriptSig = bitcoinPrivateKeySecret.ScriptPubKey;
             //transaction.Sign(bitcoinPrivateKey, false);
-            transaction.Sign(bitcoinPrivateKeySecret, false);
+            transaction.Sign(bitcoinPrivateKeySecret, false);   // Byzantine generals problem! to show/explain!
 
             //return;
 
@@ -554,7 +717,7 @@ namespace ConsoleApp1
             }
             else
             {
-                Console.WriteLine("Success! You can check out the hash of the transaciton in any block explorer:");
+                Console.WriteLine("Success! You can check out the hash of the transaction in any block explorer:");
                 Console.WriteLine(transaction.GetHash());
                 // my first successful transactions on testnet!
                 // d9d7e05bf7a1d66bc0324824bf898d2fdd6771b2fc676eaa98efa04bd94312aa
