@@ -35,7 +35,8 @@ namespace ConsoleApp1
             ProofOfOwnership();
 
             // 02. key gen and enc
-            //KeyGenerationAndEncryption();
+            KeyGenerationAndEncryption();
+            return;
 
             // 03. other types of ownership
             //Pay2Sample(); 
@@ -518,6 +519,14 @@ namespace ConsoleApp1
             Transaction transaction = new Transaction();
             stealthAddress.SendTo(transaction, Money.Coins(1.0m));
             Console.WriteLine(transaction);
+
+            // personal tests Mycelium
+            mnemo = new Mnemonic("to-copy-from-my-secret-repo", Wordlist.English);
+            hdRoot = mnemo.DeriveExtKey("my-secret-pass");//leave the password null as sample
+            var hardened = new KeyPath("44'/0'/0'/0/1");
+            Console.WriteLine(hdRoot.ToString(Network.Main));
+            ExtKey paymentKey = hdRoot.Derive(hardened);
+            Console.WriteLine(paymentKey.ScriptPubKey.GetDestinationAddress(Network.Main));
         }
 
         private static void Transaction()
