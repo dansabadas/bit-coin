@@ -521,7 +521,7 @@ namespace ConsoleApp1
             Console.WriteLine(transaction);
 
             // personal tests Mycelium
-            mnemo = new Mnemonic("to-copy-from-my-secret-repo", Wordlist.English);
+            mnemo = new Mnemonic("donkey donkey donkey donkey donkey donkey donkey donkey donkey donkey donkey donkey", Wordlist.English);
             hdRoot = mnemo.DeriveExtKey("my-secret-pass");//leave the password null as sample
             var hardened = new KeyPath("44'/0'/0'/0/1");
             Console.WriteLine(hdRoot.ToString(Network.Main));
