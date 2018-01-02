@@ -18,7 +18,6 @@ namespace ConsoleApp1
 
             //01.01 Bitcoin Address
             BitcoinAddressSample();
-
             //01.02 ScriptPubKey
             ScriptPubKey();
 
@@ -26,7 +25,8 @@ namespace ConsoleApp1
             PrivateKey();
 
             //01.04 Transaction
-            // Transaction();
+            //Transaction();
+
 
             ////01.05 Blockchain
             //Blockchain();
@@ -35,19 +35,37 @@ namespace ConsoleApp1
             ProofOfOwnership();
 
             // 02. key gen and enc
-            KeyGenerationAndEncryption();
-            return;
-
+            //KeyGenerationAndEncryption();   ///////////////
+            //Console.Read();
+            //return;
             // 03. other types of ownership
             //Pay2Sample(); 
 
-            MultiSig();
+            //MultiSig();
 
-            PayToScriptHash();
+            //PayToScriptHash();
 
-            TransactionBuilderSample();
+            //TransactionBuilderSample();
 
-            ProofOfBurnReputation();
+            //ProofOfBurnReputation();
+
+            Sha256Sample();
+        }
+
+        private static void Sha256Sample()
+        {
+            string text = "I am Satoshi Nakamoto";
+            Console.WriteLine(text.ToSha256());
+
+
+            for (int nonce = 0; nonce < 20; nonce++)
+            {
+                string input = text + nonce;
+                var hash = input.ToSha256();
+                Console.WriteLine($"{input}=>{hash}");
+            }
+
+            Sha256HashAlgorithms.ProofOfWorkSample();
         }
 
         private static void ProofOfBurnReputation() {
@@ -521,12 +539,19 @@ namespace ConsoleApp1
             Console.WriteLine(transaction);
 
             // personal tests Mycelium
-            mnemo = new Mnemonic("donkey donkey donkey donkey donkey donkey donkey donkey donkey donkey donkey donkey", Wordlist.English);
-            hdRoot = mnemo.DeriveExtKey("my-secret-pass");//leave the password null as sample
-            var hardened = new KeyPath("44'/0'/0'/0/1");
+            mnemo = new Mnemonic("artist tiger always access sport major donkey coil scale carry laptop ticket", Wordlist.English);
+            hdRoot = mnemo.DeriveExtKey();//leave the password null as sample
             Console.WriteLine(hdRoot.ToString(Network.Main));
-            ExtKey paymentKey = hdRoot.Derive(hardened);
-            Console.WriteLine(paymentKey.ScriptPubKey.GetDestinationAddress(Network.Main));
+            var hardened2 = new KeyPath("44'/0'/0'/0/1");
+
+            ExtKey paymentKey2 = hdRoot.Derive(hardened2);
+            Console.WriteLine(hardened2 + ": " + paymentKey2.ScriptPubKey.GetDestinationAddress(Network.Main));
+            Console.WriteLine(hardened2 + ": private " + paymentKey2.ToString(Network.Main));
+
+            var hardened1 = new KeyPath("44'/0'/0'/0/0");
+            ExtKey paymentKey1 = hdRoot.Derive(hardened1);
+            Console.WriteLine(hardened1 + ": " + paymentKey1.ScriptPubKey.GetDestinationAddress(Network.Main));
+            Console.WriteLine(hardened1 + ": private " + paymentKey1.ToString(Network.Main));
         }
 
         private static void Transaction()
@@ -694,7 +719,7 @@ namespace ConsoleApp1
                 Value = new Money(7, MoneyUnit.Satoshi),
                 ScriptPubKey = hallOfTheMakersAddress.ScriptPubKey
             };
-            var minerFee = new Money(500, MoneyUnit.Satoshi); // accepts 500! not 100! show example of rejected out-funds!
+            var minerFee = new Money(1, MoneyUnit.Satoshi); // accepts 500! not 100! show example of rejected out-funds!
             TxOut changeBackTxOut = new TxOut
             {
                 Value = (Money) receivedCoins[(int) outPointToSpend.N].Amount - hallOfTheMakersTxOut.Value - minerFee,
@@ -734,6 +759,7 @@ namespace ConsoleApp1
                 // 773d6ca5b18b875602f0058435422ed16a150c05fba8d086a599a361227ad047
                 // https://live.blockcypher.com/btc-testnet/tx/d9d7e05bf7a1d66bc0324824bf898d2fdd6771b2fc676eaa98efa04bd94312aa/
                 // https://live.blockcypher.com/btc-testnet/address/mtjeFt6dMKqvQmYKcBAkSX9AmX8qdynVKN/
+
             }
 
             // much slower version - direct library
