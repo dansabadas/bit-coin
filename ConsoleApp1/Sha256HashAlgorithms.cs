@@ -51,7 +51,7 @@ namespace ConsoleApp1
                 var difficulty = 2.Pow(difficultyBits);
                 Console.WriteLine($"Difficulty: {difficulty}, {difficultyBits}");
                 string newBlock = "test block with transactions" + previousHashResult;
-                Console.WriteLine($"Starting search for block {newBlock}...");
+                Console.WriteLine($"Starting search for block: {newBlock}...");
 
                 stopWatch.Start();
 
@@ -64,7 +64,7 @@ namespace ConsoleApp1
                 TimeSpan ts = stopWatch.Elapsed;
                 if (ts > TimeSpan.Zero)
                 {
-                    Console.WriteLine($"Success with nonce {nonce}.\nHash is {hashResult}.\nTarget is {target}");
+                    Console.WriteLine($"Success with nonce {nonce}.\nHash is {hashResult}.\nTarget was {target}");
                     string elapsedTime = $"{ts.Hours:00}:{ts.Minutes:00}:{ts.Seconds:00}.{ts.Milliseconds/10:00}";
                     Console.WriteLine($"Elapsed Time {elapsedTime}");
 
