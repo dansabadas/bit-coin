@@ -9,11 +9,11 @@ namespace ConsoleApp1
 {
     public static class Sha256HashAlgorithms
     {
-        static readonly long MAX_NONCE;
+        static readonly BigInteger MAX_NONCE;
 
         static Sha256HashAlgorithms()
         {
-            MAX_NONCE = (long)2.Pow(32);
+            MAX_NONCE = (BigInteger)2.Pow(32);
         }
 
         public static double Pow(this int baseOfPower, int exponent)
@@ -26,21 +26,20 @@ namespace ConsoleApp1
             return BigInteger.Parse(0+hexString, NumberStyles.AllowHexSpecifier);
         }
 
-        public static Tuple<string, int> ProofOfWork(string header, int difficultyBits)
+        public static Tuple<string, int, BigInteger> ProofOfWork(string eachMinerBlockHeaderHash, int difficultyBits)
         {
-            var target = (BigInteger)(2.Pow(256 - difficultyBits));
+            var target = (BigInteger)2.Pow(256 - difficultyBits);
             for (int nonce = 0; nonce < MAX_NONCE; nonce++)
             {
-                string hashResult = (header + nonce).ToSha256();
+                string hashResult = (eachMinerBlockHeaderHash + nonce).ToSha256();
                 var result = hashResult.ToBigInteger();
                 if (result < target)
                 {
-                    Console.WriteLine($"Success with nonce {nonce}. Hash is {hashResult}");
-                    return Tuple.Create(hashResult, nonce);
+                    return Tuple.Create(hashResult, nonce, target);
                 }
             }
 
-            return null;
+            return Tuple.Create(string.Empty, 0, new BigInteger());
         }
 
         public static void ProofOfWorkSample()
@@ -51,22 +50,25 @@ namespace ConsoleApp1
             {
                 var difficulty = 2.Pow(difficultyBits);
                 Console.WriteLine($"Difficulty: {difficulty}, {difficultyBits}");
-                Console.WriteLine("Starting search...");
+                string newBlock = "test block with transactions" + previousHashResult;
+                Console.WriteLine($"Starting search for block {newBlock}...");
+
                 stopWatch.Start();
 
-                string newBlock = "test block with transactions" + previousHashResult;
-                var (hashResult, nonce) = ProofOfWork(newBlock, difficultyBits);
+                var (hashResult, nonce, target) = ProofOfWork(newBlock, difficultyBits);
                 previousHashResult = hashResult;
 
                 stopWatch.Stop();
+
                 // Get the elapsed time as a TimeSpan value.
                 TimeSpan ts = stopWatch.Elapsed;
                 if (ts > TimeSpan.Zero)
                 {
+                    Console.WriteLine($"Success with nonce {nonce}.\nHash is {hashResult}.\nTarget is {target}");
                     string elapsedTime = $"{ts.Hours:00}:{ts.Minutes:00}:{ts.Seconds:00}.{ts.Milliseconds/10:00}";
                     Console.WriteLine($"Elapsed Time {elapsedTime}");
 
-                    var hashPower = nonce/ts.TotalSeconds;
+                    var hashPower = (int)(nonce/ts.TotalSeconds);
                     Console.WriteLine($"Hashing Power: {hashPower} hashes per second.");
                 }
             }
