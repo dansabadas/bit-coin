@@ -57,7 +57,6 @@ namespace ConsoleApp1
             string text = "I am Satoshi Nakamoto";
             Console.WriteLine(text.ToSha256());
 
-
             for (int nonce = 0; nonce < 20; nonce++)
             {
                 string input = text + nonce;

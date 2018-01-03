@@ -13,12 +13,12 @@ namespace ConsoleApp1
 
         static Sha256HashAlgorithms()
         {
-            MAX_NONCE = (BigInteger)2.Pow(32);
+            MAX_NONCE = 2.Pow(32);
         }
 
-        public static double Pow(this int baseOfPower, int exponent)
+        public static BigInteger Pow(this int baseOfPower, int exponent)
         {
-            return Math.Pow(baseOfPower, exponent);
+            return (BigInteger)Math.Pow(baseOfPower, exponent);
         }
 
         public static BigInteger ToBigInteger(this string hexString)
@@ -28,7 +28,7 @@ namespace ConsoleApp1
 
         public static Tuple<string, int, BigInteger> ProofOfWork(string eachMinerBlockHeaderHash, int difficultyBits)
         {
-            var target = (BigInteger)2.Pow(256 - difficultyBits);
+            var target = 2.Pow(256 - difficultyBits);
             for (int nonce = 0; nonce < MAX_NONCE; nonce++)
             {
                 string hashResult = (eachMinerBlockHeaderHash + nonce).ToSha256();
@@ -49,12 +49,13 @@ namespace ConsoleApp1
             for (int difficultyBits = 0; difficultyBits < 32; difficultyBits++)
             {
                 var difficulty = 2.Pow(difficultyBits);
-                Console.WriteLine($"Difficulty: {difficulty}, {difficultyBits}");
+                Console.WriteLine($"\nDifficulty: {difficulty}, {difficultyBits}");
                 string newBlock = "test block with transactions" + previousHashResult;
                 Console.WriteLine($"Starting search for block: {newBlock}...");
 
                 stopWatch.Start();
 
+                //Deconstruction in C# 7
                 var (hashResult, nonce, target) = ProofOfWork(newBlock, difficultyBits);
                 previousHashResult = hashResult;
 
@@ -88,7 +89,5 @@ namespace ConsoleApp1
 
             return sb.ToString();
         }
-
-
     }
 }
