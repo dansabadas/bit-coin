@@ -16,7 +16,7 @@ namespace ConsoleApp1.PurelyFunctional
       Value = value;
       Currency = currency ?? throw new ArgumentException(nameof(currency));
     }
+
+    public override string ToString() => $"{this.Value} {this.Currency}";
   }
-
-
 }

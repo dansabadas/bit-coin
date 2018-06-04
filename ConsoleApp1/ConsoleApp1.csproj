@@ -85,11 +85,19 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PurelyFunctional\Amount.cs" />
+    <Compile Include="PurelyFunctional\ArithmeticExtensions.cs" />
     <Compile Include="PurelyFunctional\Cash.cs" />
+    <Compile Include="PurelyFunctional\ConsoleExtensions.cs" />
+    <Compile Include="PurelyFunctional\CrockfordClosures.cs" />
     <Compile Include="PurelyFunctional\Currency.cs" />
     <Compile Include="PurelyFunctional\Gift.cs" />
     <Compile Include="PurelyFunctional\IMoney.cs" />
+    <Compile Include="PurelyFunctional\InvoiceLine.cs" />
+    <Compile Include="PurelyFunctional\Product.cs" />
+    <Compile Include="PurelyFunctional\ProductBuy.cs" />
     <Compile Include="PurelyFunctional\SamplesRunner.cs" />
+    <Compile Include="PurelyFunctional\StringExtensions.cs" />
+    <Compile Include="PurelyFunctional\Tax.cs" />
     <Compile Include="Sha256HashAlgorithms.cs" />
   </ItemGroup>
   <ItemGroup>
