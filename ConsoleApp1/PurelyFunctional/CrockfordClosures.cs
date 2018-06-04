@@ -117,6 +117,21 @@ namespace ConsoleApp1.PurelyFunctional
       var three = identityf(3);
       log(three()); // 3
 
+      //5. closure with 2 args - suggested mandatory for hiring interviews! RaphaelJS
+      // write a function addf that addstwo numbers from two invocations 
+      Func<double, double> addf(double a)
+      {
+        double innerAddFunction(double b)
+         {
+          return add(a, b); // first rule of functional programming
+          // or return a + b
+        };
+
+        return innerAddFunction;
+      }
+
+      log(addf(3)(4));  // 7
+
       Console.ReadLine();
     }
   }
