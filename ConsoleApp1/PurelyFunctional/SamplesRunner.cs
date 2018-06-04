@@ -63,6 +63,47 @@ namespace ConsoleApp1.PurelyFunctional
                 product.TotalPriceCalculator(
                     (prod, price) => prod.CalculateTax(price)));
       PrintPrices2(10, 19, product.TotalPriceCalculator(priceCalculator3));
+
+      void log(object messages)
+      {
+        if (messages == null)
+        {
+          Console.WriteLine("NULL");
+        }
+
+        Console.WriteLine(messages);
+      }
+
+      Func<int, int, int> scale = (factor, x) => factor * x;
+      Func<int, int> @double = x => scale(x, 2);
+
+      int scale2(int factor, int x) => factor * x;
+      int @double2(int x) => scale2(x, 2);
+
+      Action<Func<int, int>> doSomething = (Func<int, int> inputFunc) => { };
+      doSomething(@double);
+      doSomething(@double2);
+
+      int factor2 = 2;
+      int scale3(int x) => factor2 * x;
+
+      void Work(Func<int, int> scaleF)
+      {
+        int y = scaleF(5);
+        log(y);
+      }
+
+      factor2 = 3;
+      Work(scale3);
+
+      var closure = new Closure();
+      Console.ReadLine();
+    }
+
+    class Closure
+    {
+      public object environment;
+      public object Function(object arg) => null;
     }
   }
 }

@@ -41,20 +41,20 @@ namespace ConsoleApp1.PurelyFunctional
       log(yell());
       log(yell());
 
-      //object green2()
-      //{
-      //  var a = 6;
-      //  int yellow2()
-      //  {
-      //    return a++;
-      //  }
+      dynamic green2()  // or object
+      {
+        var a = 6;
+        Func<int> yellow2 = () =>
+        {
+          return a++;
+        };
 
-      //  return yellow2;
-      //}
+        return yellow2;
+      }
 
-      //var yell2 = (Func<int>)green2();
-      //log(yell2());
-      //log(yell2());
+      var yell2 = green2();
+      log(yell2());
+      log(yell2());
 
       //1. ask people first their opinion! => funky coompletely useless
       void funky(int[] o)
@@ -83,6 +83,40 @@ namespace ConsoleApp1.PurelyFunctional
       log(a2);
       a2 = null;
       log(a2);
+
+      //3. write 3 binary functions: add, sub and mul functions (no tricks!)
+      double add(double a, double b)
+      {
+        return a + b;
+      }
+      double sub(double a, double b)
+      {
+        return a - b;
+      }
+      double mul(double a, double b)
+      {
+        return a * b;
+      }
+
+      log(add(3, 4));
+      log(sub(3, 4));
+      log(mul(3, 4));
+
+      //4. closure with 1 arg - first interesting pb! :) - who got it? don't be discouraged
+      // write a func identityf that takes an argument
+      // and returns a function that returns that argument
+      Func<double> identityf(double o)
+      {
+        double func(){
+          return o;
+        }
+
+        return func;
+      }
+
+      var three = identityf(3);
+      log(three()); // 3
+
       Console.ReadLine();
     }
   }
