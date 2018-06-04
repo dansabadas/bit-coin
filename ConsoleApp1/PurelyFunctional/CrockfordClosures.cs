@@ -132,6 +132,25 @@ namespace ConsoleApp1.PurelyFunctional
 
       log(addf(3)(4));  // 7
 
+      //6. closure with 3 args: 2 numerical and one function which handles the 2 numbers - higher-order function (that receives other functions as params)
+      // write a function liftf that takes a binary function and makes it callable with two invocations
+      Func<double, Func<double, double>> liftf(Func<double, double, double>f)
+      {
+        Func<double, double> outerFunction(double a1){
+          double innerFunction(double b1){
+            return f(a1, b1);
+          };
+
+          return innerFunction;
+        };
+
+        return outerFunction;
+      }
+
+      var addf1 = liftf(add);
+      log(addf1(3)(4)); // 7
+      log(liftf(mul)(5)(6));  // 30
+
       Console.ReadLine();
     }
   }
