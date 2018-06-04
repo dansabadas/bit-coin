@@ -35,11 +35,11 @@ namespace ConsoleApp1
             ProofOfOwnership();
 
             // 02. key gen and enc
-            //KeyGenerationAndEncryption();   ///////////////
+            KeyGenerationAndEncryption();   ///////////////
             //Console.Read();
             //return;
             // 03. other types of ownership
-            //Pay2Sample(); 
+            Pay2Sample(); 
 
             //MultiSig();
 
