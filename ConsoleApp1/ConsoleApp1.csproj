@@ -86,15 +86,23 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PurelyFunctional\Amount.cs" />
     <Compile Include="PurelyFunctional\ArithmeticExtensions.cs" />
+    <Compile Include="PurelyFunctional\BankCard.cs" />
     <Compile Include="PurelyFunctional\Cash.cs" />
+    <Compile Include="PurelyFunctional\Common\None.cs" />
+    <Compile Include="PurelyFunctional\Common\Option.cs" />
+    <Compile Include="PurelyFunctional\Common\Some.cs" />
     <Compile Include="PurelyFunctional\ConsoleExtensions.cs" />
     <Compile Include="PurelyFunctional\CrockfordClosures.cs" />
     <Compile Include="PurelyFunctional\Currency.cs" />
+    <Compile Include="PurelyFunctional\CurrencyExtensiosn.cs" />
+    <Compile Include="PurelyFunctional\Date.cs" />
     <Compile Include="PurelyFunctional\Element.cs" />
     <Compile Include="PurelyFunctional\Gift.cs" />
     <Compile Include="PurelyFunctional\Hashing.cs" />
     <Compile Include="PurelyFunctional\IMoney.cs" />
     <Compile Include="PurelyFunctional\InvoiceLine.cs" />
+    <Compile Include="PurelyFunctional\MoneyExtensions.cs" />
+    <Compile Include="PurelyFunctional\Month.cs" />
     <Compile Include="PurelyFunctional\Product.cs" />
     <Compile Include="PurelyFunctional\ProductBuy.cs" />
     <Compile Include="PurelyFunctional\SamplesRunner.cs" />
@@ -108,6 +116,7 @@
       <SubType>Designer</SubType>
     </None>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
