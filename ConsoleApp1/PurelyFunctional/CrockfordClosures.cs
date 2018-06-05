@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace ConsoleApp1.PurelyFunctional
 {
@@ -230,12 +231,13 @@ namespace ConsoleApp1.PurelyFunctional
       // and returns a func that calls them both (composing them)
       Func<double, double, double, double> composeb(Func<double, double, double> bf1, Func<double, double, double> bf2)
       {
-        double function(double a, double b, double c){
+        double innerFunction(double a, double b, double c)
+        {
           var s = bf1(a, b);
           return bf2(s, c);
         }
 
-        return function;
+        return innerFunction;
       }
 
       log(composeb(add, mul)(2, 3, 7)); //35
@@ -244,7 +246,8 @@ namespace ConsoleApp1.PurelyFunctional
       // write a limit func that allows a binary func to be called a limited number of times
       Func<double, double, double?> limit(Func<double, double, double> bf1, int l)
       {
-        double? function(double a, double b) {
+        double? innerFunction(double a, double b)
+        {
           if (l >= 1)
           {
             l -= 1;
@@ -254,7 +257,7 @@ namespace ConsoleApp1.PurelyFunctional
           return null;
         }
 
-        return function;
+        return innerFunction;
       }
 
       var add_ltd = limit(add, 1);
@@ -268,11 +271,12 @@ namespace ConsoleApp1.PurelyFunctional
       //14. write a 'from' func that produces a generator that will produce a serioes of values
       Func<int> from(int seed)
       {
-        int function(){
+        int innerFunction()
+        {
           return seed++;
         }
 
-        return function;
+        return innerFunction;
       }
 
       var index = from(0);
@@ -283,7 +287,8 @@ namespace ConsoleApp1.PurelyFunctional
       //15. write a 'to' func which takes a generator (see pb. above) and an end val and returns a generator that will produce numbers up to that limit
       Func<int?> to(Func<int> generator, int endVal)
       {
-        int? function(){
+        int? innerFunction()
+        {
           var nextVal = generator();
           if (nextVal < endVal)
           {
@@ -293,7 +298,7 @@ namespace ConsoleApp1.PurelyFunctional
           return null;
         }
 
-        return function;
+        return innerFunction;
       }
 
       var index2 = to(from(1), 3);
@@ -317,7 +322,8 @@ namespace ConsoleApp1.PurelyFunctional
       // write an 'element' func that takes an array and a generator and returns a generator that will produce elements from the array
       Func<double?> element0(double[] arr, Func<int?> generatorFunc)
       {
-        double? function(){
+        double? innerFunction()
+        {
           var nextVal = generatorFunc();
           if (nextVal != null)
           {
@@ -327,7 +333,7 @@ namespace ConsoleApp1.PurelyFunctional
           return null;
         }
 
-        return function;
+        return innerFunction;
       }
 
       var ele = element0(new double[] { 'a', 'b', 'c', 'd' }, fromTo(1, 3));
@@ -340,7 +346,8 @@ namespace ConsoleApp1.PurelyFunctional
       Func<double?> element(double[] arr, Func<int?> generatorFunc = null)
       {
         var generator = generatorFunc != null ? generatorFunc : fromTo(0, arr.Length);
-        double? function(){
+        double? innerFunction()
+        {
           var nextVal = generator();
           if (nextVal != null)
           {
@@ -350,7 +357,7 @@ namespace ConsoleApp1.PurelyFunctional
           return null;
         }
 
-        return function;
+        return innerFunction;
       }
 
       ele = element(new double[] { 'a', 'b', 'c', 'd' });
@@ -359,6 +366,244 @@ namespace ConsoleApp1.PurelyFunctional
       log((char)ele());//c
       log((char)ele());//d
       log(ele());//NULL
+
+      //19. write a 'collect' func that takes a generator and an array and produces a function  
+      // that will collect the results (made internally by the generator at every invocation of collect) in the array
+      Func<int?> collect(Func<int?> generator, List<int> arr)
+      {
+        int? innerFunction()
+        {
+          var res = generator();
+          if (res != null)
+          {
+            arr.Add(res.Value);
+          }
+
+          return res;
+        }
+
+        return innerFunction;
+      }
+
+      var array = new List<int>();
+      var col = collect(fromTo(0, 2), array);
+
+      log(col()); //0
+      log(col()); //1
+      log(col()); //NULL
+      log(array.Count); //[0,1]
+
+      //20. named third is optional - hint: you need a loop. also show the commented recursive version below properly implemented now in ES6 (recursive vs iterative approach)
+      // write a filter func that takes a generator and a predicate 
+      // and produces a generator that produces only the values approved by the predicate
+      //Func<int?> filter(Func<int?> generator, Func<int, bool> predicate)
+      //{
+      //  int? innerFunction()
+      //  {
+      //    int? generatedValue;
+      //    do
+      //    {
+      //      generatedValue = generator();
+      //    } while (generatedValue != null && !predicate(generatedValue.Value));
+
+      //    return generatedValue;
+      //  }
+
+      //  return innerFunction;
+      //}
+
+      Func<int?> filter(Func<int?> generator, Func<int, bool> predicate)
+      {
+        int? recur()
+        {
+          var value = generator();
+          if (value == null || predicate(value.Value))
+          {
+            return value;
+          }
+
+          return recur();
+        }
+
+        return recur;
+      }
+
+      var fil = filter(fromTo(0, 5), 
+        (int value) => value % 3 == 0);
+      log(fil()); // 0
+      log(fil()); // 3
+      log(fil()); // null
+
+      //21. write a 'concat' function which takes 2 generators and produces a generator that combines the sequences
+      Func<int?> concat(Func<int?> gen1, Func<int?> gen2)
+      {
+        var gen = gen1;
+        int? innerFunction()
+        {
+          var value = gen();
+          if (value != null)
+          {
+            return value;
+          }
+          gen = gen2;
+          return gen();
+        }
+
+        return innerFunction;
+      }
+
+      var con = concat(fromTo(0, 3), fromTo(0, 2));
+      log(con()); //0
+      log(con()); //1
+      log(con()); //2
+      log(con()); //0
+      log(con()); //1
+      log(con()); //null
+
+      //22. make a function 'gensymf' that makes a function that generates unique symbols
+      Func<string> gensymf(string symbol)
+      {
+        var i = 0;
+        string innerFunction()
+        {
+          i += 1;
+          return symbol + i;
+        }
+
+        return innerFunction;
+      }
+
+      var geng = gensymf("G");  // these are prefixes (G series and H series)
+      var genh = gensymf("H");
+
+      log(geng());//G1
+      log(genh());//H1
+      log(geng());//G2
+      log(genh());//H2
+
+      //23. this is a factory fibonacci generator. this is hard. no recursivity! elegant iterativity!
+      //first example is a little too big and we do not need the i. the second sample is the more optimal
+      // make a fibonaccif that returns a generator function that will return the next fibonacci number
+      Func<int> fibonaccif0(int i1, int i2)
+      {
+        int i = -1, next;
+        int innerFunction()
+        {
+          i += 1;
+          if (i == 0)
+          {
+            return i1;
+          }
+          else if (i == 1)
+          {
+            return i2;
+          }
+
+          next = i1 + i2;
+          i1 = i2;
+          i2 = next;
+          return next;
+        }
+
+        return innerFunction;
+      }
+
+      var fib = fibonaccif0(0, 1);
+      log(fib());//0
+      log(fib());//1
+      log(fib());//1
+      log(fib());//2
+      log(fib());//3
+      log(fib());//5
+
+      Func<int> fibonaccif(int i1, int i2)
+      {
+        int innerFunction()
+        {
+          var next = i1;
+          i1 = i2;
+          i2 += next;
+          return next;
+        }
+
+        return innerFunction;
+      }
+
+      fib = fibonaccif(0, 1);
+      log(fib());
+      log(fib());
+      log(fib());
+      log(fib());
+      log(fib());
+      log(fib());
+
+      //24. Hint: no 'this', no global variables! :) OOP combined with functional programming/closures
+      // write a counter function that returns an object containing 2 functions that implement 
+      // an up/down counter, hiding the counter
+      dynamic counter(int seed)
+      {
+        return new
+        {
+          up = new Func<int>(() => {
+            seed += 1;
+            return seed;
+          }),
+          down = (Func<int>)(() => {
+            seed -= 1;
+            return seed;
+          })
+        };
+      }
+
+      var obj = counter(10);
+      var up = obj.up;
+      var down = obj.down;
+
+      log(up());  //11
+      log(down());//10
+      log(down());//9
+      log(up());  //10
+
+      //25. this sounds much more complex than it actually is!!! :)
+      // make a revocable function that takes a binary function and returns an object containing 
+      // an invoke function that can invoke the binary function and a revoke function that disables the invoke function
+      dynamic revocable(Func<double, double, double> binaryF)
+      {
+        return new
+        {
+          invoke = new Func<double, double, double?>((a, b) =>
+          {
+            return binaryF == null ? (double?)null : binaryF(a, b);
+          }),
+          revoke = new Action(() =>
+          {
+            binaryF = null;
+          })
+        };
+
+        //alternate impl:
+        //var isRevoked = false;
+        //return new 
+        //{
+        //  invoke = new Func<double, double, double?>((a, b) => {
+        //    if (!isRevoked)
+        //    {
+        //      return binaryF(a, b);
+        //    }
+
+        //    return null;
+        //  }),
+        //  revoke = new Action(() => {
+        //    isRevoked = true;
+        //  })
+        //};
+      }
+
+      var rev = revocable(add);
+      var add_rev = rev.invoke;
+      log(add_rev(3, 4)); //7
+      rev.revoke();
+      log(add_rev(3, 4)); // null
 
       Console.ReadLine();
     }
