@@ -240,6 +240,126 @@ namespace ConsoleApp1.PurelyFunctional
 
       log(composeb(add, mul)(2, 3, 7)); //35
 
+      //13. return undefined: 2 schools of thought: either save space, or provide documented code for the contract to return undefined
+      // write a limit func that allows a binary func to be called a limited number of times
+      Func<double, double, double?> limit(Func<double, double, double> bf1, int l)
+      {
+        double? function(double a, double b) {
+          if (l >= 1)
+          {
+            l -= 1;
+            return bf1(a, b);
+          }
+
+          return null;
+        }
+
+        return function;
+      }
+
+      var add_ltd = limit(add, 1);
+      log(add_ltd(3, 4)); // 7
+      log(add_ltd(3, 4)); // null
+      var mul_ltd = limit(mul, 2);
+      log(mul_ltd(3, 4)); //12
+      log(mul_ltd(3, 4)); //12
+      log(mul_ltd(3, 4)); //null
+
+      //14. write a 'from' func that produces a generator that will produce a serioes of values
+      Func<int> from(int seed)
+      {
+        int function(){
+          return seed++;
+        }
+
+        return function;
+      }
+
+      var index = from(0);
+      log(index()); // 0
+      log(index()); // 1
+      log(index()); // 2
+
+      //15. write a 'to' func which takes a generator (see pb. above) and an end val and returns a generator that will produce numbers up to that limit
+      Func<int?> to(Func<int> generator, int endVal)
+      {
+        int? function(){
+          var nextVal = generator();
+          if (nextVal < endVal)
+          {
+            return nextVal;
+          }
+
+          return null;
+        }
+
+        return function;
+      }
+
+      var index2 = to(from(1), 3);
+      log(index2()); //1
+      log(index2()); //2
+      log(index2()); //NULL
+
+      //16. write a 'fromTo' that produces a generator that will produce values in a range
+      Func<int?> fromTo(int startVal, int endVal)
+      {
+        return to(from(startVal), endVal);
+      }
+
+      var index3 = fromTo(0, 3);
+      log(index3()); //0
+      log(index3()); //1
+      log(index3()); //2
+      log(index3()); //NULL
+
+      //17. better to use this version than the more direct: var next = generatorFunc(); return arr[next]; because still accidentally works cause arr[undefined] does not exist
+      // write an 'element' func that takes an array and a generator and returns a generator that will produce elements from the array
+      Func<double?> element0(double[] arr, Func<int?> generatorFunc)
+      {
+        double? function(){
+          var nextVal = generatorFunc();
+          if (nextVal != null)
+          {
+            return arr[nextVal.Value];
+          }
+
+          return null;
+        }
+
+        return function;
+      }
+
+      var ele = element0(new double[] { 'a', 'b', 'c', 'd' }, fromTo(1, 3));
+      log((char)ele()); //b
+      log((char)ele()); //c
+      log(ele()); //NULL
+
+      //18. modify the 'element' function so that the generator argument is optional. 
+      // If generator not provided => then each element of the array will be provided
+      Func<double?> element(double[] arr, Func<int?> generatorFunc = null)
+      {
+        var generator = generatorFunc != null ? generatorFunc : fromTo(0, arr.Length);
+        double? function(){
+          var nextVal = generator();
+          if (nextVal != null)
+          {
+            return arr[nextVal.Value];
+          }
+
+          return null;
+        }
+
+        return function;
+      }
+
+      ele = element(new double[] { 'a', 'b', 'c', 'd' });
+      log((char)ele());//a
+      log((char)ele());//b
+      log((char)ele());//c
+      log((char)ele());//d
+      log(ele());//NULL
+
       Console.ReadLine();
     }
   }

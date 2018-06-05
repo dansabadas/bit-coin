@@ -6,10 +6,9 @@
 
     public Some(T content)
     {
-      this.Content = content;
+      Content = content;
     }
 
-    public static implicit operator T(Some<T> value) =>
-        value.Content;
+    public static implicit operator T(Some<T> value) => value.Content;
   }
 }
