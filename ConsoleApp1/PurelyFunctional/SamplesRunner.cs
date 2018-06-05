@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace ConsoleApp1.PurelyFunctional
@@ -38,8 +39,8 @@ namespace ConsoleApp1.PurelyFunctional
 
     public static void Run()
     {
-      Tuple<IMoney, Amount> toopie = Add(new Cash(0, new Currency("usd")), new Amount(0, new Currency("usd")), DateTime.Now).ToTuple();
-      ValueTuple<IMoney, Amount> toopie2 = Add(new Cash(0, new Currency("usd")), new Amount(0, new Currency("usd")), DateTime.Now);
+      Tuple<IMoney, Amount> toopie = Add(new Cash(0, Currency.USD), new Amount(0, Currency.USD), DateTime.Now).ToTuple();
+      ValueTuple<IMoney, Amount> toopie2 = Add(new Cash(0, Currency.USD), new Amount(0, Currency.USD), DateTime.Now);
 
       //PrintPrices(
       //          new Product("Steering wheel",
@@ -49,7 +50,7 @@ namespace ConsoleApp1.PurelyFunctional
 
       Product product =
           new Product("Steering wheel",
-              new Amount(20, new Currency("USD")));
+              new Amount(20, Currency.USD));
 
       Func<Product, Amount, Amount> priceCalculator =
           (prod, price) => prod.CalculateTax(price);
@@ -96,14 +97,38 @@ namespace ConsoleApp1.PurelyFunctional
       factor2 = 3;
       Work(scale3);
 
-      var closure = new Closure();
-      Console.ReadLine();
-    }
+      HashSet<int> set = new HashSet<int>();
+      set.Add(22);
+      set.Add(33);
+      set.Add(27);
+      set.Add(54);
 
-    class Closure
-    {
-      public object environment;
-      public object Function(object arg) => null;
+      var contains33 = set.Contains(33);
+      log(contains33);
+
+      Element<int>[] set2 = new Element<int>[7];
+      set2.Add(22);
+      set2.Add(33);
+      set2.Add(27);
+      set2.Add(54);
+
+      contains33 = set2.Contains(33);
+      log(contains33);
+
+      Currency eur = Currency.EUR;
+      Element<Currency>[] set3 = new Element<Currency>[7];
+
+      set3.Add(eur);
+      if (set3.Contains(eur))
+      {
+        Console.WriteLine("Suspect found!");
+      }
+      else
+      {
+        Console.WriteLine("Suspect NOT found!");
+      }
+
+      Console.ReadLine();
     }
   }
 }

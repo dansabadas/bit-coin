@@ -90,7 +90,9 @@
     <Compile Include="PurelyFunctional\ConsoleExtensions.cs" />
     <Compile Include="PurelyFunctional\CrockfordClosures.cs" />
     <Compile Include="PurelyFunctional\Currency.cs" />
+    <Compile Include="PurelyFunctional\Element.cs" />
     <Compile Include="PurelyFunctional\Gift.cs" />
+    <Compile Include="PurelyFunctional\Hashing.cs" />
     <Compile Include="PurelyFunctional\IMoney.cs" />
     <Compile Include="PurelyFunctional\InvoiceLine.cs" />
     <Compile Include="PurelyFunctional\Product.cs" />
