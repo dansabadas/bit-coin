@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ConsoleApp1.PurelyFunctional
+﻿namespace ConsoleApp1.PurelyFunctional
 {
   static class Arithmetic
   {
@@ -13,5 +7,12 @@ namespace ConsoleApp1.PurelyFunctional
 
     public static Amount Add(this Amount amount, decimal value) =>
         new Amount(amount.Value + value, amount.Currency);
+
+    public static (Amount subtracted, Amount final) Subtract(this Amount from, Amount amount) =>
+            from.Currency != amount.Currency 
+              ? (amount.Currency.Zero(), from)
+              : from.Value <= amount.Value 
+                ? (amount, from.Currency.Zero())
+                : (amount, new Amount(from.Value - amount.Value, from.Currency));
   }
 }

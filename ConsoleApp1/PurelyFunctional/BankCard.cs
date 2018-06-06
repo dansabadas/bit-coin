@@ -2,14 +2,12 @@
 
 namespace ConsoleApp1.PurelyFunctional
 {
-  public class Gift : IMoney
+  public class BankCard : IMoney
   {
-    public Amount Value { get; }
     public DateTime ValidBefore { get; }
 
-    public Gift(Amount value, Date validBefore)
+    public BankCard(Month validBefore)
     {
-      this.Value = value;
       this.ValidBefore = validBefore;
     }
   }
