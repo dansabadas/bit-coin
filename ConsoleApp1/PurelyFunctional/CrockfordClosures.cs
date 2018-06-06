@@ -605,6 +605,19 @@ namespace ConsoleApp1.PurelyFunctional
       rev.revoke();
       log(add_rev(3, 4)); // null
 
+      //26. 
+      // write a function 'm' that takes a value and an optional source string and returns them in an object
+      dynamic m(double value, dynamic source = null)
+      {
+        return new {
+           value,
+           source = source != null && source.GetType() == typeof(string) ? source : value.ToString()
+        };
+      }
+
+      log(m(1));
+      log(m(Math.PI, "pi"));
+
       Console.ReadLine();
     }
   }
