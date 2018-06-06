@@ -108,7 +108,7 @@ namespace ConsoleApp1.PurelyFunctional
       // and returns a function that returns that argument
       Func<double> identityf(double o)
       {
-        double func(){
+        double func() {
           return o;
         }
 
@@ -123,7 +123,7 @@ namespace ConsoleApp1.PurelyFunctional
       Func<double, double> addf(double a)
       {
         double innerAddFunction(double b)
-         {
+        {
           return add(a, b); // first rule of functional programming
           // or return a + b
         };
@@ -135,10 +135,10 @@ namespace ConsoleApp1.PurelyFunctional
 
       //6. closure with 3 args: 2 numerical and one function which handles the 2 numbers - higher-order function (that receives other functions as params)
       // write a function liftf that takes a binary function and makes it callable with two invocations
-      Func<double, Func<double, double>> liftf(Func<double, double, double>f)
+      Func<double, Func<double, double>> liftf(Func<double, double, double> f)
       {
-        Func<double, double> outerFunction(double a1){
-          double innerFunction(double b1){
+        Func<double, double> outerFunction(double a1) {
+          double innerFunction(double b1) {
             return f(a1, b1);
           };
 
@@ -157,7 +157,7 @@ namespace ConsoleApp1.PurelyFunctional
 
       // write a function curry that takes two arguments: a binary function and a 'regular' argument,
       // and returns a function that can take a second argument (and that invokes the binary function)
-      Func<double, double> curry(Func<double, double, double>f, double a)
+      Func<double, double> curry(Func<double, double, double> f, double a)
       {
         //return liftf(f)(a);
         double innerFunction(double b)
@@ -187,7 +187,7 @@ namespace ConsoleApp1.PurelyFunctional
       // that takes a binary func and return an unary func that passes its argument to the binary function twice
       Func<double, double> twice(Func<double, double, double> binaryFunc)
       {
-        double innerFunction(double b){
+        double innerFunction(double b) {
           return binaryFunc(b, b);
         }
 
@@ -202,7 +202,7 @@ namespace ConsoleApp1.PurelyFunctional
       //10. write reverse, a func which reverses the arguments of a binary function
       Func<double, double, double> reverse(Func<double, double, double> binary)
       {
-        double innerFunction(double a, double b){
+        double innerFunction(double a, double b) {
           return binary(b, a);
         }
 
@@ -428,7 +428,7 @@ namespace ConsoleApp1.PurelyFunctional
         return recur;
       }
 
-      var fil = filter(fromTo(0, 5), 
+      var fil = filter(fromTo(0, 5),
         (int value) => value % 3 == 0);
       log(fil()); // 0
       log(fil()); // 3
@@ -609,14 +609,228 @@ namespace ConsoleApp1.PurelyFunctional
       // write a function 'm' that takes a value and an optional source string and returns them in an object
       dynamic m(double value, dynamic source = null)
       {
-        return new {
-           value,
-           source = source != null && source.GetType() == typeof(string) ? source : value.ToString()
+        return new
+        {
+          value,
+          source = source != null && source.GetType() == typeof(string) ? source : value.ToString()
         };
       }
 
       log(m(1));
       log(m(Math.PI, "pi"));
+
+      //27. who did it? the hard way and with the first rule of func programming...
+      // write a func 'addm' that takes two m objects and returns an m object 
+      //(m have 2 properties. one is mandatory 'value' and the other is optional: 'source')
+      dynamic addm(dynamic m1, dynamic m2)
+      {
+        return m(
+            m1.value + m2.value,
+            "(" + m1.source + "+" + m2.source + ")"
+        );
+      }
+
+      log(addm(m(1), m(3)));  //{"value":4,"source":"(1+3)"}
+      log(addm(m(1), m(Math.PI, "pi")));  //{"value":4.141592653589793,"source":"(1+pi)"}
+
+      //28. this is a monad!
+      // write a function 'liftm' that takes a binary function and a string and returns a function that acts on m objects
+      Func<dynamic, dynamic, dynamic> liftm(Func<double, double, double> binary, string sign)
+      {
+        dynamic function(dynamic m1, dynamic m2)
+        {
+          return m(
+              binary(m1.value, m2.value),
+              "(" + m1.source + sign + m2.source + ")"
+          );
+        }
+
+        return function;
+      }
+
+      var addm1 = liftm(add, "+");
+      log(addm1(m(1), m(3)));  //{"value":4,"source":"(1+3)"}
+      log(liftm(mul, "*")(m(4), m(3))); //{"value":12,"source":"(4*3)"
+
+      //29. 
+      // modify liftm so that the functions it produces can accept arguments that are either numbers or m objects
+      Func<dynamic, dynamic, dynamic> liftm2(Func<double, double, double> binary, string sign)
+      {
+        dynamic function(dynamic a, dynamic b)
+        {
+          double num;
+          if (double.TryParse(a.ToString(), out num))
+          {
+            a = m(a);
+          }
+          if (double.TryParse(b.ToString(), out num))
+          {
+            b = m(b);
+          }
+
+          return m(
+              binary(a.value, b.value),
+              "(" + a.source + sign + b.source + ")"
+          );
+        }
+
+        return function;
+      }
+
+      var addm2 = liftm2(add, "+");
+      log(addm2(1, 3));//{"value":4,"source":"(1+3)"}
+
+      //30. a simple array expression is an array in which the first element is a function and the remaining elements are arguments to the function
+      // assume the sae has always only 3 elements. two different implementations below
+      // write a function 'exp' that evaluates simple array expressions.
+      dynamic exp(dynamic value)
+      {
+        return value.GetType().IsArray
+          ? value[0](value[1], value[2])
+          : value;
+      }
+
+      Func<double, double, double> mulFunc = mul;
+      var sae = new dynamic[] { mulFunc, 5, 11 };
+      log(exp(sae));  // 55
+      log(exp(42));   //42
+
+      //31. there are 2 implementations below!. this time we can have 3 or 2 elements in the array
+      // it resembles LISP!
+      //31. Modify exp to evaluate nested array expressions
+      dynamic exp2(dynamic value)
+      {
+        if (!value.GetType().IsArray) return value;
+        return value.Length == 3
+          ? value[0](exp2(value[1]), exp2(value[2]))
+          : value[0](exp2(value[1]));
+      }
+
+      Func<double, double> sqrt = Math.Sqrt;
+      Func<double, double, double> addFunc = add;
+      var nae = new dynamic[] 
+      {
+          sqrt,
+          new dynamic[]
+          {
+              addFunc,
+              new dynamic[] 
+              {
+                square,
+                3
+              },
+              new dynamic[] 
+              {
+                square,
+                4
+              }
+          }
+      };
+      log(exp2(nae));  // 5
+
+      //32. (hint: it involves a function which returns itself somehow)
+      // compiler bug detected! mandatory to provide null to inner function!
+      // write a function 'addg' which adds from many invocations until it sees an empty (or in C# a NULL) invocation 
+      dynamic addg(double? first = null)
+      {
+        dynamic more(double? next = null)
+        {
+          if (next == null)
+          {
+            return first;
+          }
+
+          first += next;
+          //Func<double?, dynamic> moreC = more;
+          return (Func<double?, dynamic>)more;  //moreC
+        }
+
+        if (first != null)
+        {
+          //Func<double?, dynamic> moreC = more;
+          return (Func<double?, dynamic>)more;  //moreC;// 
+        }
+
+        return null;
+      }
+
+      log(addg());            //null
+      log(addg(2)(null));         //2 
+      log(addg(2)(7)(null));      //9
+      log(addg(3)(0)(4)(null));   //7
+      log(addg(1)(2)(4)(8)(null));//15
+
+      //33. 
+      // write a func 'liftg' that will take a binary function and apply it to many invocations
+      dynamic liftg(Func<double, double, double> binaryF)
+      {
+        dynamic function(double? first)
+        {
+          if (first == null)
+          {
+            return null;
+          }
+
+          dynamic more(double? next = null)
+          {
+            if (next == null)
+            {
+              return first;
+            }
+            first = binaryF(first.Value, next.Value);
+            return (Func<double?, dynamic>)more;
+          }
+
+          return (Func<double?, dynamic>)more;
+        }
+
+        return (Func<double?, dynamic>)function;
+      }
+
+      log(liftg(mul)(null));              //null
+      log(liftg(mul)(3)(null));           //3
+      log(liftg(mul)(1)(0)(4)(8)(null));  //0
+      log(liftg(mul)(1)(2)(4)(8)(null));  //64
+
+      //34. the 2 impl
+      // write a function 'arrayg' that will build a list from many invocations
+      dynamic arrayg(double? first = null)
+      {
+        var returnArr = new List<double>();
+        dynamic more(double? next = null)
+        {
+          if (next == null)
+          {
+            return returnArr;
+          }
+          returnArr.Add(next.Value);
+          return (Func<double?, dynamic>)more;
+        }
+
+        return more(first);
+      }
+
+      log(arrayg().Count);           //[]
+      log(arrayg(3)(null).Count);        //[3]
+      log(arrayg(3)(4)(5)(null).Count);  //[3,4,5]
+
+      //35. 
+      // make a 'continuize' function that takes a unary function and returns
+      // a function that takes a callback and an argument
+      Func<Action<double>, double, double> continuize(Func<double, double> unaryF)
+      {
+        double function(Action<double> callback, double arg){
+          var result = unaryF(arg);
+          callback(result);
+          return result;
+        }
+
+        return function;
+      }
+
+      Action<double> log1 = (double number) => log(number);
+      var sqrtc = continuize(Math.Sqrt);
+      sqrtc(log1, 81); //9
 
       Console.ReadLine();
     }
