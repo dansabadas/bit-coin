@@ -88,8 +88,10 @@
     <Compile Include="PurelyFunctional\ArithmeticExtensions.cs" />
     <Compile Include="PurelyFunctional\BankCard.cs" />
     <Compile Include="PurelyFunctional\Cash.cs" />
+    <Compile Include="PurelyFunctional\Common\EnumerableExtensions.cs" />
     <Compile Include="PurelyFunctional\Common\None.cs" />
     <Compile Include="PurelyFunctional\Common\Option.cs" />
+    <Compile Include="PurelyFunctional\Common\Reiterable.cs" />
     <Compile Include="PurelyFunctional\Common\Some.cs" />
     <Compile Include="PurelyFunctional\ConsoleExtensions.cs" />
     <Compile Include="PurelyFunctional\CrockfordClosures.cs" />
@@ -108,6 +110,7 @@
     <Compile Include="PurelyFunctional\SamplesRunner.cs" />
     <Compile Include="PurelyFunctional\StringExtensions.cs" />
     <Compile Include="PurelyFunctional\Tax.cs" />
+    <Compile Include="PurelyFunctional\Wallet.cs" />
     <Compile Include="Sha256HashAlgorithms.cs" />
   </ItemGroup>
   <ItemGroup>

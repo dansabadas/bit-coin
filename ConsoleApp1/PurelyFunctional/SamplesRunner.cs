@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ConsoleApp1.PurelyFunctional.Common;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -103,6 +104,35 @@ namespace ConsoleApp1.PurelyFunctional
       {
         Console.WriteLine("Suspect NOT found!");
       }
+
+      IEnumerable<int> Evens()
+      {
+        int n = 0;
+        while(n < Int32.MaxValue - 2)
+        {
+          n += 2;
+          yield return n;
+        }
+      }
+
+      IEnumerable<int> Evens2() => Enumerable.Range(1, Int32.MaxValue).Where(i => i % 2 == 0);
+
+      var cnt = Evens().Take(12).Count();
+      log(cnt);
+      cnt = Evens2().Take(12).Count();
+      log(cnt);
+      IEnumerable<int> Evens3() => Enumerable.Range(1, Int32.MaxValue).Select(i => 2*i);
+      cnt = Evens3().Take(12).Count();
+      log(cnt);
+
+      List<IMoney> list = new List<IMoney>()
+            {
+                new Cash(20, Currency.USD),
+                new Gift(new Amount(10, Currency.EUR), new Date(2021, 11, 4))
+            };
+
+      IEnumerable<IMoney> sequence = list;
+      Reiterable<IMoney> moneys = sequence.AsReiterable();
 
       Console.ReadLine();
     }

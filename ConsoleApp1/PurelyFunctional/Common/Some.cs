@@ -2,7 +2,7 @@
 {
   public class Some<T> : Option<T>
   {
-    private T Content { get; }
+    public T Content { get; }
 
     public Some(T content)
     {

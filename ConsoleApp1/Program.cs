@@ -14,8 +14,8 @@ namespace ConsoleApp1
   {
     static void Main(string[] args)
     {
-      //PurelyFunctional.SamplesRunner.Run();
-      new PurelyFunctional.CrockfordClosures().Run();
+      PurelyFunctional.SamplesRunner.Run();
+      //new PurelyFunctional.CrockfordClosures().Run();
       return;
             //https://programmingblockchain.gitbooks.io/programmingblockchain/content/bitcoin_transfer/private_key.html
 
