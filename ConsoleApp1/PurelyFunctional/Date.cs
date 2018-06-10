@@ -15,5 +15,7 @@ namespace ConsoleApp1.PurelyFunctional
     }
 
     public static implicit operator DateTime(Date date) => date.Value;
+
+    public static implicit operator Date(DateTime dateTime) => new Date(dateTime.Year, dateTime.Month, dateTime.Day);
   }
 }

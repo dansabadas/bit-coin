@@ -1,27 +1,18 @@
 ﻿using ConsoleApp1.PurelyFunctional.Common;
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 
 namespace ConsoleApp1.PurelyFunctional
 {
   public class Wallet
   {
-    public IEnumerable<IMoney> Moneys { get; }
-    //public IEnumerable<IMoney> Moneys => this.Materialized;
-    //private List<IMoney> Materialized { get; }
-
-    public Wallet(Common.Reiterable<IMoney> moneys)
+    public Currency BaseCurrency { get; }
+    public ImmutableList<IMoney> Moneys { get; }
+    public Wallet(Currency baseCurrency, ImmutableList<IMoney> moneys)
     {
-      //this.Materialized = moneys.ToList();
+      this.BaseCurrency = baseCurrency;
       this.Moneys = moneys;
     }
-  }
-
-  public static class WalletExtensions
-  {
-    public static Wallet PayableAt(this Wallet wallet, DateTime at) =>
-        new Wallet(wallet.Moneys
-            .SelectOptional(money => money.PayableAt(at))
-            .AsReiterable());
   }
 }

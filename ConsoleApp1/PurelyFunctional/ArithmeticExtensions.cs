@@ -14,5 +14,9 @@
               : from.Value <= amount.Value 
                 ? (amount, from.Currency.Zero())
                 : (amount, new Amount(from.Value - amount.Value, from.Currency));
+
+    private static (Amount subtracted, Amount remaining) SafeTake(
+        this Amount from, decimal value) =>
+        (new Amount(value, from.Currency), new Amount(from.Value - value, from.Currency));
   }
 }
