@@ -93,6 +93,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BitcoinClientSamples.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PurelyFunctional\Amount.cs" />
@@ -122,6 +123,7 @@
     <Compile Include="PurelyFunctional\StringExtensions.cs" />
     <Compile Include="PurelyFunctional\Tax.cs" />
     <Compile Include="PurelyFunctional\Trainings\CrockfordClosures.cs" />
+    <Compile Include="PurelyFunctional\Trainings\FuncExtensionMethods.cs" />
     <Compile Include="PurelyFunctional\Trainings\ReactiveProgrammingFundamentals.cs" />
     <Compile Include="PurelyFunctional\Wallet.cs" />
     <Compile Include="PurelyFunctional\WalletExtensions.cs" />
