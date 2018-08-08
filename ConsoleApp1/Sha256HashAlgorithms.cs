@@ -42,6 +42,21 @@ namespace ConsoleApp1
             return Tuple.Create(string.Empty, 0, new BigInteger());
         }
 
+        public static void Sha256Sample()
+        {
+            string text = "I am Satoshi Nakamoto";
+            Console.WriteLine(text.ToSha256());
+
+            for (int nonce = 0; nonce < 20; nonce++)
+            {
+                string input = text + nonce;
+                var hash = input.ToSha256();
+                Console.WriteLine($"{input}=>{hash}");
+            }
+
+            ProofOfWorkSample();
+        }
+
         public static void ProofOfWorkSample()
         {
             Stopwatch stopWatch = new Stopwatch();
