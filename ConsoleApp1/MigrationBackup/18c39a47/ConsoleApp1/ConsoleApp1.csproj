@@ -1,0 +1,154 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="packages\Microsoft.Net.Compilers.2.8.2\build\Microsoft.Net.Compilers.props" Condition="Exists('packages\Microsoft.Net.Compilers.2.8.2\build\Microsoft.Net.Compilers.props')" />
+  <Import Project="packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.0\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props" Condition="Exists('packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.0\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{33D902BD-14DD-4389-A4A2-19D61B9464CC}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>ConsoleApp1</RootNamespace>
+    <AssemblyName>ConsoleApp1</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <TargetFrameworkProfile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <LangVersion>7.2</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.0\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
+    </Reference>
+    <Reference Include="NBitcoin, Version=4.1.1.42, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\NBitcoin.4.1.1.42\lib\net461\NBitcoin.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="QBitNinja.Client, Version=1.0.3.47, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\QBitNinja.Client.1.0.3.47\lib\net461\QBitNinja.Client.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>packages\System.Buffers.4.5.0\lib\netstandard2.0\System.Buffers.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Collections.Immutable, Version=1.2.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>packages\System.Collections.Immutable.1.5.0\lib\netstandard2.0\System.Collections.Immutable.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ComponentModel.Composition" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.IO">
+      <HintPath>packages\System.IO.4.3.0\lib\net462\System.IO.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Net.Http, Version=4.1.1.2, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>packages\System.Net.Http.4.3.3\lib\net46\System.Net.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Runtime">
+      <HintPath>packages\System.Runtime.4.3.0\lib\net462\System.Runtime.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Security.Cryptography.Algorithms">
+      <HintPath>packages\System.Security.Cryptography.Algorithms.4.3.1\lib\net463\System.Security.Cryptography.Algorithms.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Security.Cryptography.Encoding, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>packages\System.Security.Cryptography.Encoding.4.3.0\lib\net46\System.Security.Cryptography.Encoding.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Security.Cryptography.Primitives, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>packages\System.Security.Cryptography.Primitives.4.3.0\lib\net46\System.Security.Cryptography.Primitives.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Security.Cryptography.X509Certificates">
+      <HintPath>packages\System.Security.Cryptography.X509Certificates.4.3.2\lib\net461\System.Security.Cryptography.X509Certificates.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.ValueTuple">
+      <HintPath>packages\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="BitcoinClientSamples.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PurelyFunctional\Amount.cs" />
+    <Compile Include="PurelyFunctional\ArithmeticExtensions.cs" />
+    <Compile Include="PurelyFunctional\BankCard.cs" />
+    <Compile Include="PurelyFunctional\Cash.cs" />
+    <Compile Include="PurelyFunctional\Common\EnumerableExtensions.cs" />
+    <Compile Include="PurelyFunctional\Common\None.cs" />
+    <Compile Include="PurelyFunctional\Common\ObjectExtensions.cs" />
+    <Compile Include="PurelyFunctional\Common\Option.cs" />
+    <Compile Include="PurelyFunctional\Common\Reiterable.cs" />
+    <Compile Include="PurelyFunctional\Common\Some.cs" />
+    <Compile Include="PurelyFunctional\ConsoleExtensions.cs" />
+    <Compile Include="PurelyFunctional\Currency.cs" />
+    <Compile Include="PurelyFunctional\CurrencyExtensiosn.cs" />
+    <Compile Include="PurelyFunctional\Date.cs" />
+    <Compile Include="PurelyFunctional\Element.cs" />
+    <Compile Include="PurelyFunctional\Gift.cs" />
+    <Compile Include="PurelyFunctional\Hashing.cs" />
+    <Compile Include="PurelyFunctional\IMoney.cs" />
+    <Compile Include="PurelyFunctional\InvoiceLine.cs" />
+    <Compile Include="PurelyFunctional\MoneyExtensions.cs" />
+    <Compile Include="PurelyFunctional\Month.cs" />
+    <Compile Include="PurelyFunctional\Product.cs" />
+    <Compile Include="PurelyFunctional\ProductBuy.cs" />
+    <Compile Include="PurelyFunctional\SamplesRunner.cs" />
+    <Compile Include="PurelyFunctional\StringExtensions.cs" />
+    <Compile Include="PurelyFunctional\Tax.cs" />
+    <Compile Include="PurelyFunctional\Trainings\CrockfordClosures.cs" />
+    <Compile Include="PurelyFunctional\Trainings\FuncExtensionMethods.cs" />
+    <Compile Include="PurelyFunctional\Trainings\ReactiveProgrammingFundamentals.cs" />
+    <Compile Include="PurelyFunctional\Wallet.cs" />
+    <Compile Include="PurelyFunctional\WalletExtensions.cs" />
+    <Compile Include="Sha256HashAlgorithms.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.0\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.0\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props'))" />
+    <Error Condition="!Exists('packages\Microsoft.Net.Compilers.2.8.2\build\Microsoft.Net.Compilers.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Microsoft.Net.Compilers.2.8.2\build\Microsoft.Net.Compilers.props'))" />
+  </Target>
+</Project>
