@@ -80,6 +80,7 @@
     <Compile Include="PurelyFunctional\SamplesRunner.cs" />
     <Compile Include="PurelyFunctional\StringExtensions.cs" />
     <Compile Include="PurelyFunctional\Tax.cs" />
+    <Compile Include="PurelyFunctional\Trainings\ConcurrencyDotNet.cs" />
     <Compile Include="PurelyFunctional\Trainings\CrockfordClosures.cs" />
     <Compile Include="PurelyFunctional\Trainings\FuncExtensionMethods.cs" />
     <Compile Include="PurelyFunctional\Trainings\ReactiveProgrammingFundamentals.cs" />
