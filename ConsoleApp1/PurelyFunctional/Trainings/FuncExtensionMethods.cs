@@ -1,9 +1,33 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace ConsoleApp1.PurelyFunctional.Trainings
 {
+    public sealed class Atom<T> where T : class
+    {
+        private volatile T _value;
+        public Atom(T value)
+        {
+            _value = value;
+        }
+
+        public T Value => _value;
+
+        public T Swap(Func<T, T> factory)
+        {
+            T original, temp;
+            do
+            {
+                original = _value;
+                temp = factory(original);
+            }
+            while (Interlocked.CompareExchange(ref _value, temp, original) != original);
+            return original;
+        }
+    }
+
     static class FuncExtensionMethods
     {
         static Func<A, C> Compose<A, B, C>(this Func<A, B> f, Func<B, C> g)
