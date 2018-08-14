@@ -2,16 +2,35 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace ConsoleApp1.PurelyFunctional.Trainings
 {
+    struct Complex
+    {
+        public Complex(float real, float imaginary)
+        {
+            Real = real;
+            Imaginary = imaginary;
+        }
+
+        public float Imaginary { get; }
+
+        public float Real { get; }
+
+        public float Magnitude => (float)Math.Sqrt(Real * Real + Imaginary * Imaginary);
+        public static Complex operator +(Complex c1, Complex c2) => new Complex(c1.Real + c2.Real, c1.Imaginary + c2.Imaginary);
+        public static Complex operator *(Complex c1, Complex c2)
+            => new Complex(c1.Real * c2.Real - c1.Imaginary * c2.Imaginary, c1.Real * c2.Imaginary + c1.Imaginary * c2.Real);
+    }
+
     public sealed class FList<T>
     {
         private FList(T head, FList<T> tail)
         {
             Head = head;
             Tail = tail.IsEmpty
-                ? FList<T>.Empty 
+                ? Empty
                 : tail;
             IsEmpty = false;
         }
@@ -30,13 +49,13 @@ namespace ConsoleApp1.PurelyFunctional.Trainings
         public static FList<T> Cons(T head, FList<T> tail)
         {
             return tail.IsEmpty
-            ? new FList<T>(head, Empty)
-            : new FList<T>(head, tail);
+                ? new FList<T>(head, Empty)
+                : new FList<T>(head, tail);
         }
 
         public FList<T> Cons(T element)
         {
-            return FList<T>.Cons(element, this);
+            return Cons(element, this);
         }
 
         public static readonly FList<T> Empty = new FList<T>();
@@ -67,14 +86,6 @@ namespace ConsoleApp1.PurelyFunctional.Trainings
 
     static class FuncExtensionMethods
     {
-        public static void Run()
-        {
-            FList<int> list1 = FList<int>.Empty;
-            FList<int> list2 = list1.Cons(1).Cons(2).Cons(3);
-            FList<int> list3 = FList<int>.Cons(1, FList<int>.Empty);
-            FList<int> list4 = list2.Cons(2).Cons(3);
-        }
-
         static Func<A, C> Compose<A, B, C>(this Func<A, B> f, Func<B, C> g) => (n) => g(f(n));
 
         private static readonly Dictionary<Tuple<Type, Type>, object> __cache = new Dictionary<Tuple<Type, Type>, object>();

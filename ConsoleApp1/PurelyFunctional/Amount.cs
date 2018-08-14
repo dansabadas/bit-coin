@@ -41,8 +41,8 @@ namespace ConsoleApp1.PurelyFunctional
     }
 
     public static bool operator ==(Amount a, Amount b) =>
-        (object.ReferenceEquals(a, null) && object.ReferenceEquals(b, null)) ||
-        (!object.ReferenceEquals(a, null) && a.Equals(b));
+        (ReferenceEquals(a, null) && ReferenceEquals(b, null)) ||
+        (!ReferenceEquals(a, null) && a.Equals(b));
 
     public static bool operator !=(Amount a, Amount b) =>
         !(a == b);

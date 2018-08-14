@@ -6,7 +6,7 @@ namespace ConsoleApp1.PurelyFunctional
   {
     private static int GetHashEntry<T>(this Element<T>[] set, T value)
     {
-      if (object.ReferenceEquals(value, null))
+      if (ReferenceEquals(value, null))
         return 0;
 
       int code = value.GetHashCode();
