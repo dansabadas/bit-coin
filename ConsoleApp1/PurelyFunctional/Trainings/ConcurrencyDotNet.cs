@@ -1,13 +1,10 @@
 ﻿using System;
-<<<<<<< HEAD
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-=======
 using System.Threading;
 using System.Threading.Tasks;
->>>>>>> c8a37aed0a9a5b077b5ea28d62b94c57b806bbcb
 
 namespace ConsoleApp1.PurelyFunctional.Trainings
 {
@@ -15,7 +12,6 @@ namespace ConsoleApp1.PurelyFunctional.Trainings
     {
         public static void Run()
         {
-<<<<<<< HEAD
             var data = new int[1000000];
             for (int i = 0; i < data.Length; i++)
                 data[i] = i;
@@ -24,7 +20,7 @@ namespace ConsoleApp1.PurelyFunctional.Trainings
 
             // Begin timing.
             stopwatch.Start();
-            long total =
+            long total1 =
                 data.AsParallel()
                     .Where(n => n % 2 == 0)
                     .Select(n => n + n)
@@ -32,7 +28,7 @@ namespace ConsoleApp1.PurelyFunctional.Trainings
             stopwatch.Stop();
 
             // Write result.
-            Console.WriteLine($"Time elapsed for normal: {stopwatch.Elapsed} with result = {total}");
+            Console.WriteLine($"Time elapsed for normal: {stopwatch.Elapsed} with result = {total1}");
 
             stopwatch.Start();
             long total2 = data.AsParallel()
@@ -47,7 +43,7 @@ namespace ConsoleApp1.PurelyFunctional.Trainings
             Console.WriteLine(Greeting("Paul"));
             System.Threading.Thread.Sleep(2000);
             Console.WriteLine(Greeting("Richard"));
-=======
+
             FList<int> list1 = FList<int>.Empty;
             FList<int> list2 = list1.Cons(1).Cons(2).Cons(3);
             FList<int> list3 = FList<int>.Cons(1, FList<int>.Empty);
@@ -91,11 +87,9 @@ namespace ConsoleApp1.PurelyFunctional.Trainings
             Console.WriteLine(Greeting ("Paul"));
             Thread.Sleep(2000);
             Console.WriteLine(Greeting ("Richard"));
->>>>>>> c8a37aed0a9a5b077b5ea28d62b94c57b806bbcb
 
             Func<string, string> grFunc = (name) => $"Warm greetings {name}, the time is {DateTime.Now:hh:mm:ss}";
             var greetingMemoize = grFunc.Memoize(); // FuncExtensionMethods.Memoize<string, string>(Greeting);
-<<<<<<< HEAD
             Console.WriteLine(greetingMemoize("Richard"));
             System.Threading.Thread.Sleep(2000);
             Console.WriteLine(greetingMemoize("Paul"));
@@ -107,20 +101,8 @@ namespace ConsoleApp1.PurelyFunctional.Trainings
             System.Threading.Thread.Sleep(2000);
             Console.WriteLine(greetingMemoize2("Paul"));
             System.Threading.Thread.Sleep(2000);
-=======
-            Console.WriteLine(greetingMemoize ("Richard"));
-            Thread.Sleep(2000);
-            Console.WriteLine(greetingMemoize ("Paul"));
-            Thread.Sleep(2000);
-            Console.WriteLine(greetingMemoize("Richard"));
 
-            var greetingMemoize2 = grFunc.MemoizeLazyThreadSafe();
-            Console.WriteLine(greetingMemoize2 ("Richard"));
-            Thread.Sleep(2000);
-            Console.WriteLine(greetingMemoize2 ("Paul"));
-            Thread.Sleep(2000);
->>>>>>> c8a37aed0a9a5b077b5ea28d62b94c57b806bbcb
-            Console.WriteLine(greetingMemoize2("Richard"));
+            Console.WriteLine(greetingMemoize ("Richard"));
         }
 
         private static string Greeting(string name) => $"Warm greetings {name}, the time is {DateTime.Now:hh:mm:ss}";
