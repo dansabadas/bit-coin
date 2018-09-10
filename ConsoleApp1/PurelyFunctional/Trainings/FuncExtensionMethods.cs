@@ -2,13 +2,92 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace ConsoleApp1.PurelyFunctional.Trainings
 {
+    struct Complex
+    {
+        public Complex(float real, float imaginary)
+        {
+            Real = real;
+            Imaginary = imaginary;
+        }
+
+        public float Imaginary { get; }
+
+        public float Real { get; }
+
+        public float Magnitude => (float)Math.Sqrt(Real * Real + Imaginary * Imaginary);
+        public static Complex operator +(Complex c1, Complex c2) => new Complex(c1.Real + c2.Real, c1.Imaginary + c2.Imaginary);
+        public static Complex operator *(Complex c1, Complex c2)
+            => new Complex(c1.Real * c2.Real - c1.Imaginary * c2.Imaginary, c1.Real * c2.Imaginary + c1.Imaginary * c2.Real);
+    }
+
+    public sealed class FList<T>
+    {
+        private FList(T head, FList<T> tail)
+        {
+            Head = head;
+            Tail = tail.IsEmpty
+                ? Empty
+                : tail;
+            IsEmpty = false;
+        }
+
+        private FList()
+        {
+            IsEmpty = true;
+        }
+
+        public T Head { get; }
+
+        public FList<T> Tail { get; }
+
+        public bool IsEmpty { get; }
+
+        public static FList<T> Cons(T head, FList<T> tail)
+        {
+            return tail.IsEmpty
+                ? new FList<T>(head, Empty)
+                : new FList<T>(head, tail);
+        }
+
+        public FList<T> Cons(T element)
+        {
+            return Cons(element, this);
+        }
+
+        public static readonly FList<T> Empty = new FList<T>();
+    }
+
+    public sealed class Atom<T> where T : class
+    {
+        private volatile T _value;
+        public Atom(T value)
+        {
+            _value = value;
+        }
+
+        public T Value => _value;
+
+        public T Swap(Func<T, T> factory)
+        {
+            T original, temp;
+            do
+            {
+                original = _value;
+                temp = factory(original);
+            }
+            while (Interlocked.CompareExchange(ref _value, temp, original) != original);
+            return original;
+        }
+    }
+
     static class FuncExtensionMethods
     {
-        static Func<A, C> Compose<A, B, C>(this Func<A, B> f, Func<B, C> g)
-          => (n) => g(f(n));
+        static Func<A, C> Compose<A, B, C>(this Func<A, B> f, Func<B, C> g) => (n) => g(f(n));
 
         private static readonly Dictionary<Tuple<Type, Type>, object> __cache = new Dictionary<Tuple<Type, Type>, object>();
         public static Func<T, R> Memoize<T, R>(this Func<T, R> func)

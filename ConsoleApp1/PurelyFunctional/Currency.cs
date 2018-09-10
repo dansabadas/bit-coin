@@ -27,11 +27,11 @@ namespace ConsoleApp1.PurelyFunctional
     public override bool Equals(object obj) => this.Equals((Currency)obj);
 
     public bool Equals(Currency obj) =>
-            !object.ReferenceEquals(obj, null) && obj.Symbol == this.Symbol;
+            !ReferenceEquals(obj, null) && obj.Symbol == this.Symbol;
 
     public static bool operator ==(Currency a, Currency b) =>
-        object.ReferenceEquals(a, b) ||
-        (!object.ReferenceEquals(a, null) && a.Equals(b));
+        ReferenceEquals(a, b) ||
+        (!ReferenceEquals(a, null) && a.Equals(b));
 
     public static bool operator !=(Currency a, Currency b) => !(a == b);
   }
