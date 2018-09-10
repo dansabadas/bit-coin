@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
 using System.Linq;
 
 namespace ConsoleApp1.PurelyFunctional.Trainings
@@ -8,31 +10,99 @@ namespace ConsoleApp1.PurelyFunctional.Trainings
     {
         public static void Run()
         {
-            Console.WriteLine(Greeting ("Richard"));
-            System.Threading.Thread.Sleep(2000);
-            Console.WriteLine(Greeting ("Paul"));
-            System.Threading.Thread.Sleep(2000);
-            Console.WriteLine(Greeting ("Richard"));
+            var data = new int[1000000];
+            for (int i = 0; i < data.Length; i++)
+                data[i] = i;
 
-            Func<string, string> grFunc = (name) => $"Warm greetings {name}, the time is {DateTime.Now.ToString("hh:mm:ss")}";
-            var greetingMemoize = grFunc.Memoize(); // FuncExtensionMethods.Memoize<string, string>(Greeting);
-            Console.WriteLine(greetingMemoize ("Richard"));
+            Stopwatch stopwatch = new Stopwatch();
+
+            // Begin timing.
+            stopwatch.Start();
+            long total =
+                data.AsParallel()
+                    .Where(n => n % 2 == 0)
+                    .Select(n => n + n)
+                    .Sum(x => (long)x);
+            stopwatch.Stop();
+
+            // Write result.
+            Console.WriteLine($"Time elapsed for normal: {stopwatch.Elapsed} with result = {total}");
+
+            stopwatch.Start();
+            long total2 = data.AsParallel()
+                .Aggregate(0L, (acc, n) => n % 2 == 0 ? acc + (n + n) : acc);
+            stopwatch.Stop();
+
+            // Write result.
+            Console.WriteLine($"Time elapsed for deforested: {stopwatch.Elapsed} with result = {total2}");
+
+            Console.WriteLine(Greeting("Richard"));
             System.Threading.Thread.Sleep(2000);
-            Console.WriteLine(greetingMemoize ("Paul"));
+            Console.WriteLine(Greeting("Paul"));
+            System.Threading.Thread.Sleep(2000);
+            Console.WriteLine(Greeting("Richard"));
+
+            Func<string, string> grFunc = (name) => $"Warm greetings {name}, the time is {DateTime.Now:hh:mm:ss}";
+            var greetingMemoize = grFunc.Memoize(); // FuncExtensionMethods.Memoize<string, string>(Greeting);
+            Console.WriteLine(greetingMemoize("Richard"));
+            System.Threading.Thread.Sleep(2000);
+            Console.WriteLine(greetingMemoize("Paul"));
             System.Threading.Thread.Sleep(2000);
             Console.WriteLine(greetingMemoize("Richard"));
 
             var greetingMemoize2 = grFunc.MemoizeLazyThreadSafe();
-            Console.WriteLine(greetingMemoize2 ("Richard"));
+            Console.WriteLine(greetingMemoize2("Richard"));
             System.Threading.Thread.Sleep(2000);
-            Console.WriteLine(greetingMemoize2 ("Paul"));
+            Console.WriteLine(greetingMemoize2("Paul"));
             System.Threading.Thread.Sleep(2000);
             Console.WriteLine(greetingMemoize2("Richard"));
         }
 
-        private static string Greeting(string name)
+        private static string Greeting(string name) => $"Warm greetings {name}, the time is {DateTime.Now:hh:mm:ss}";
+
+        public static double AreaCircle(int radius) => Math.Pow(radius, 2) * Math.PI;
+
+        public static int Add(int x, int y) => x + y;
+
+        public static Dictionary<string, int> WordsCounter(string source)
         {
-            return $"Warm greetings {name}, the time is {DateTime.Now.ToString("hh:mm:ss")}";
+            var contentFiles = Directory
+                .GetFiles(source, "*.txt")
+                .Select(File.ReadLines);
+            var partitionedResult = PureWordsPartitioner(contentFiles);
+
+            var wordsCount =
+                (from filePath in
+                        Directory.GetFiles(source, "*.txt")
+                            .AsParallel()
+                    from line in File.ReadLines(filePath)
+                    from word in line.Split(' ')
+                    select word.ToUpper())
+                .GroupBy(w => w)
+                .OrderByDescending(v => v.Count())
+                .Take(10);
+
+            return wordsCount.ToDictionary(k => k.Key, v => v.Count());
+        }
+
+        static Dictionary<string, int> PureWordsPartitioner
+            (IEnumerable<IEnumerable<string>> content) =>
+            (from lines in content.AsParallel()
+                from line in lines
+                from word in line.Split(' ')
+                select word.ToUpper())
+            .GroupBy(w => w)
+            .OrderByDescending(v => v.Count())
+            .Take(10)
+            .ToDictionary(k => k.Key, v => v.Count());
+
+        static Dictionary<string, int> WordsPartitioner(string sourceFolder)
+        {
+            var contentFiles =
+                (from filePath in Directory.GetFiles(sourceFolder, "*.txt")
+                    let lines = File.ReadLines(filePath)
+                    select lines);
+            return PureWordsPartitioner(contentFiles);
         }
     }
 }

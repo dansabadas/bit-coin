@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ConsoleApp1.PurelyFunctional.Trainings
 {
@@ -68,5 +69,45 @@ namespace ConsoleApp1.PurelyFunctional.Trainings
 
             return arg => cache.GetOrAdd(arg, a => new Lazy<R>(() => func(a))).Value;
         }
+
+        static IEnumerable<R>  Map<T, R>(IEnumerable<T> sequence, Func<T, R> projection)
+        {
+            return sequence.Aggregate(new List<R>(), (acc, item) => {
+                acc.Add(projection(item));
+                //acc.AddRange(new List<R> { projection(item) });
+                return acc;
+            });
+        }
+
+        static int Max(IEnumerable<int> sequence)
+        {
+            return sequence.Aggregate(0, (acc, item) => Math.Max(item, acc));
+        }
+
+        static IEnumerable<T> Filter<T>(IEnumerable<T> sequence, Func<T, bool> predicate)
+        {
+            return sequence.Aggregate(new List<T>(), (acc, item) =>
+            {
+                if (predicate(item))
+                {
+                    acc.Add(item);
+                }
+
+                return acc;
+            });
+        }
+
+        static int Length<T>(IEnumerable<T> sequence) => sequence.Aggregate(0, (acc, _) => acc + 1);
+
+        static TSource Reduce<TSource>(this ParallelQuery<TSource> source, Func<TSource, TSource, TSource> reduce) =>
+            ParallelEnumerable.Aggregate(source, (item1, item2) => reduce(item1, item2));
+
+        static TValue Reduce<TValue>(this IEnumerable<TValue> source, TValue seed, Func<TValue, TValue, TValue> reduce) =>
+            source.AsParallel()
+                .Aggregate(
+                    seed: seed,
+                    updateAccumulatorFunc: (local, value) => reduce(local, value),
+                    combineAccumulatorsFunc: (overall, local) => reduce(overall, local),
+                    resultSelector: overall => overall);
     }
 }
