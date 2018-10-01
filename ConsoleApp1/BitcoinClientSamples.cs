@@ -58,15 +58,15 @@ namespace ConsoleApp1
       var init = new Transaction()
       {
         Outputs =
-                {
-                    new TxOut(Money.Coins(1.0m), alice),
-                }
+        {
+            new TxOut(Money.Coins(1.0m), alice),
+        }
       };
 
       var coin = init.Outputs.AsCoins().First();
 
-      //Burning the coin
-      var burn = new Transaction();
+            //Burning the coin
+            Transaction burn = new Transaction();
       burn.Inputs.Add(new TxIn(coin.Outpoint)
       {
         ScriptSig = coin.ScriptPubKey
