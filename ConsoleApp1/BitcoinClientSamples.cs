@@ -1,6 +1,6 @@
 ﻿using NBitcoin;
 using NBitcoin.Crypto;
-using NBitcoin.Stealth;
+using NBitcoin.Stealth; 
 using QBitNinja.Client;
 using QBitNinja.Client.Models;
 using System;

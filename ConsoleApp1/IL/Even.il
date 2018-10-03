@@ -9,7 +9,7 @@
         //----------- Method declaration
         .method public static void check() cil managed
         {
-            .entrypoint // uncomment this line and compile with: ilasm Even => will produce Even.exe
+            //.entrypoint // uncomment this line and compile with: ilasm Even => will produce Even.exe
             .locals init (int32 Retval)
             AskForNumber:
                 ldstr "Enter a number"
