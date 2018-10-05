@@ -93,6 +93,7 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="IL\Even.il" />
+    <None Include="IL\Even2.il" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform">

@@ -4,3 +4,4 @@ ConsoleApp1/packages/
 *.suo
 ConsoleApp1/.vs/
 *.user
+*.exe
