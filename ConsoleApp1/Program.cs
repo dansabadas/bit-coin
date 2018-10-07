@@ -1,4 +1,5 @@
-﻿using ConsoleApp1.PurelyFunctional.Trainings;
+﻿using ConsoleApp1.IL;
+using ConsoleApp1.PurelyFunctional.Trainings;
 
 namespace ConsoleApp1
 {
@@ -6,12 +7,13 @@ namespace ConsoleApp1
     {
         static void Main(string[] args)
         {
+            IlCSharpSamples.Run();
             //PurelyFunctional.SamplesRunner.Run();
             //BitcoinClientSamples.Run();
             //new PurelyFunctional.CrockfordClosures().Run();
             //Sha256HashAlgorithms.Sha256Sample();
 
-            ConcurrencyDotNet.Run();
+            //ConcurrencyDotNet.Run();
         }
     }
 }
