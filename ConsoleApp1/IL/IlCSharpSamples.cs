@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Reflection;
 using System.Reflection.Emit;
 
 namespace ConsoleApp1.IL
@@ -37,7 +38,44 @@ namespace ConsoleApp1.IL
             //CallingMethods();
             //CallingDynamicMethods();
             //FactorialIL();
-            SwitchIL();
+            //SwitchIL();
+            TypeBuilder();
+        }
+
+        public static void TypeBuilder()
+        {
+            var assemblyBuilder =
+                AppDomain.CurrentDomain.DefineDynamicAssembly(new AssemblyName("Demo"), AssemblyBuilderAccess.Run);
+            var moduleBuilder = assemblyBuilder.DefineDynamicModule("PersonModule");
+            var typeBuilder = moduleBuilder.DefineType("Person", TypeAttributes.Public);
+
+            var nameField = typeBuilder.DefineField("name", typeof(string), FieldAttributes.Private);
+            var ctor = typeBuilder.DefineConstructor(MethodAttributes.Public, CallingConventions.Standard,
+                new[] {typeof(string)});
+            var ctorIL = ctor.GetILGenerator();
+            ctorIL.Emit(OpCodes.Ldarg_0);   // the first parameter sent to a constructor is the instance 'this' itself
+            ctorIL.Emit(OpCodes.Ldarg_1);   // the second argument is the first classic one for a constructor!
+            ctorIL.Emit(OpCodes.Stfld, nameField);
+            ctorIL.Emit(OpCodes.Ret);
+
+            var nameProperty = typeBuilder.DefineProperty("Name", PropertyAttributes.HasDefault, typeof(string), null);
+            var namePropertyGetMethod = typeBuilder.DefineMethod("get_Name",
+                MethodAttributes.Public | MethodAttributes.SpecialName | MethodAttributes.HideBySig,
+                typeof(string), Type.EmptyTypes);
+
+            nameProperty.SetGetMethod(namePropertyGetMethod);
+
+            var namePropertyGetMethodIL = namePropertyGetMethod.GetILGenerator();
+            namePropertyGetMethodIL.Emit(OpCodes.Ldarg_0);
+            namePropertyGetMethodIL.Emit(OpCodes.Ldfld, nameField);
+            namePropertyGetMethodIL.Emit(OpCodes.Ret);
+
+            var t = typeBuilder.CreateType();
+            var nProperty = t.GetProperty("Name");
+
+            var instance = Activator.CreateInstance(t, "Filip");
+            var result = nProperty.GetValue(instance, null);
+            Console.WriteLine(result);
         }
 
         public static void FactorialIL()
