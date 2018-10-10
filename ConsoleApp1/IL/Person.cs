@@ -8,6 +8,11 @@ namespace ConsoleApp1.IL
 {
     class Person
     {
+        public Person()
+        {
+            Name = "Danson";
+        }
+
         public string Name { get; set; }
 
         public string Speak()
