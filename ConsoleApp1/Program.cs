@@ -7,11 +7,11 @@ namespace ConsoleApp1
     {
         static void Main(string[] args)
         {
-            IlCSharpSamples.Run();
+            //IlCSharpSamples.Run();
             //PurelyFunctional.SamplesRunner.Run();
             //BitcoinClientSamples.Run();
             //new PurelyFunctional.CrockfordClosures().Run();
-            //Sha256HashAlgorithms.Sha256Sample();
+            Sha256HashAlgorithms.Sha256Sample();
 
             //ConcurrencyDotNet.Run();
         }
