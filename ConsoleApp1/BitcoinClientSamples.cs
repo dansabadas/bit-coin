@@ -647,7 +647,7 @@ namespace ConsoleApp1
 
       Console.WriteLine(bitcoinPrivateKeySecret); // cVX7SpYc8yjNW8WzPpiGTqyWD4eM4BBnfqEm9nwGqJb2QiX9hhdf - this is my private testnet
       Console.WriteLine(address);
-      // mtjeFt6dMKqvQmYKcBAkSX9AmX8qdynVKN - THIS is my public bitcoin testnet address!!!!!!!
+      // mtjeFt6dMKqvQmYKcBAkSX9AmX8qdynVKN - THIS is my first public bitcoin testnet address!!!!!!!
       Console.WriteLine(network);
 
       //tx IDS: 7a73b2fa89315be9a1292bf817c5e97296cdd14019c112ebbdf2cbfeecc60e7d

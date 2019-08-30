@@ -12,7 +12,7 @@ namespace ConsoleApp1
             //PurelyFunctional.SamplesRunner.Run();
             //BitcoinClientSamples.Run();
             //new PurelyFunctional.CrockfordClosures().Run();
-            //Sha256HashAlgorithms.Sha256Sample();
+            Sha256HashAlgorithms.Sha256Sample();
 
             //ConcurrencyDotNet.Run();
             new CrockfordClosures().Run();

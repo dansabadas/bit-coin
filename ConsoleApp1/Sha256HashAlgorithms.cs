@@ -54,7 +54,7 @@ namespace ConsoleApp1
                 Console.WriteLine($"{input}=>{hash}");
             }
 
-            ProofOfWorkSample();
+            //ProofOfWorkSample();
         }
 
         public static void ProofOfWorkSample()

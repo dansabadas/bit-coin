@@ -51,8 +51,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AlgorithmsForInterviews\68\ThirsPowerEqualityCheck.cs" />
+    <Compile Include="AlgorithmsForInterviews\70\StringPermutationsFinder.cs" />
+    <Compile Include="AlgorithmsForInterviews\73\BCR.cs" />
     <Compile Include="BitcoinClientSamples.cs" />
     <Compile Include="IL\IlCSharpSamples.cs" />
+    <None Include="IL\MyILSamples.il" />
     <Compile Include="IL\Person.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

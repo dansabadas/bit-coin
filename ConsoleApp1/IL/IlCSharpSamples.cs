@@ -39,7 +39,102 @@ namespace ConsoleApp1.IL
             //CallingDynamicMethods();
             //FactorialIL();
             //SwitchIL();
-            TypeBuilder();
+            //TypeBuilder();
+            CallingDynamicMethods2();
+            CreateInstanceOfClass();
+            LoadElementsFromArray();
+        }
+
+        static void LoadElementsFromArray()
+        {
+            var arrayHandling = new DynamicMethod(
+                "ArrayHandling",
+                typeof(int),
+                new []{ typeof(int[])});
+
+            var il = arrayHandling.GetILGenerator();
+            il.Emit(OpCodes.Ldarg_0);
+            il.Emit(OpCodes.Ldc_I4_0);
+            il.Emit(OpCodes.Ldelem_I4); // we loaded first elem from arr on top of evaluation stack
+
+            il.Emit(OpCodes.Ldarg_0);
+            il.Emit(OpCodes.Ldc_I4_1);
+            il.Emit(OpCodes.Ldelem_I4); // we loaded the second elem from arr on top of evaluation stack
+
+            il.Emit(OpCodes.Mul);
+            il.Emit(OpCodes.Ret);
+
+            var method = arrayHandling.CreateDelegate<Func<int[], int>>();
+            var result = method(new[] {10, 20});
+            Console.WriteLine(result);
+        }
+
+        static void CreateInstanceOfClass()
+        {
+            var instanceCreation = new DynamicMethod(
+                "InstanceCreation",
+                typeof(Person),
+                Type.EmptyTypes,
+                typeof(Program).Module);
+
+            var il = instanceCreation.GetILGenerator();
+            il.Emit(OpCodes.Newobj, typeof(Person).GetConstructor(Type.EmptyTypes));// reference to constructed person will be put on top of evaluation stack
+            il.Emit(OpCodes.Ret);
+
+            var getPersonMethod = instanceCreation.CreateDelegate<Func<Person>>();
+            var result = getPersonMethod();
+            Console.WriteLine(result.Name);
+        }
+
+        static void CallingDynamicMethods2()
+        {
+            var multiplyMethod = new DynamicMethod(
+                "MultiplyMethod",
+                typeof(double),
+                new[] { typeof(int), typeof(int) });
+
+            var il = multiplyMethod.GetILGenerator();
+            il.Emit(OpCodes.Ldarg_0);
+            il.Emit(OpCodes.Conv_R4);
+            il.Emit(OpCodes.Ldarg_1);
+            il.Emit(OpCodes.Conv_R4);
+            //il.Emit(OpCodes.Div);
+            il.Emit(OpCodes.Rem);
+            //il.Emit(OpCodes.Conv_R4);
+            il.Emit(OpCodes.Ret);
+
+            var multiplyMethodDelegate = multiplyMethod.CreateDelegate<Func<int, int, double>>();
+            var result = multiplyMethodDelegate(10, 20);
+            Console.WriteLine(result);
+
+            var negateMethod = new DynamicMethod(
+                "NegateMethod",
+                typeof(int),
+                new[] { typeof(int) });
+            il = negateMethod.GetILGenerator();
+            il.Emit(OpCodes.Ldarg_0);
+            il.Emit(OpCodes.Neg);
+            //il.Emit(OpCodes.Ldc_I4, -1);
+            //il.Emit(OpCodes.Mul);
+            il.Emit(OpCodes.Ret);
+            var negateMethodDelegate = negateMethod.CreateDelegate<Func<int, int>>();
+            result = negateMethodDelegate(2);
+            Console.WriteLine(result);
+
+            var bitwiseMethod = new DynamicMethod(
+                "BitwiseMethod",
+                typeof(int),
+                new[] { typeof(int), typeof(int) });
+
+            il = bitwiseMethod.GetILGenerator();
+            il.Emit(OpCodes.Ldarg_0);
+            il.Emit(OpCodes.Ldarg_1);
+            il.Emit(OpCodes.And);   // or logical OpCodes.Or
+            il.Emit(OpCodes.Ret);
+
+            var bitwiseMethodDelegate = bitwiseMethod.CreateDelegate<Func<int, int, int>>();
+            result = bitwiseMethodDelegate(6, 4);
+            Console.WriteLine(result);
         }
 
         public static void TypeBuilder()
