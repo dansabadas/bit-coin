@@ -39,8 +39,8 @@ namespace ConsoleApp1.PurelyFunctional
       }
 
       var yell = green();
-      log(yell());
-      log(yell());
+      yell();
+      Console.WriteLine(yell());
 
       dynamic green2()  // or object
       {
@@ -63,10 +63,11 @@ namespace ConsoleApp1.PurelyFunctional
         o = null;
       }
 
-      var x1 = new int[0];
+      var x1 = new int[1] { 2 };
 
       funky(x1);
-      log(x1); //a. throw exception b. =null c. = int[0] 
+      Console.WriteLine(x1[0]); //a. throw exception b. =null c. = int[0] 
+
 
       //2. what is value of x?
       void swap(int a, int b)
@@ -78,7 +79,7 @@ namespace ConsoleApp1.PurelyFunctional
 
       int x2 = 1, y2 = 2;
       swap(x2, y2);
-      log(x2); //a. 1 b.2 c.null d. throw exc
+      Console.WriteLine(x2); //a. 1 b.2 c.null d. throw exc
 
       int[] a2 = new int[2] { 1, 2 };
       log(a2);
@@ -122,13 +123,13 @@ namespace ConsoleApp1.PurelyFunctional
       // write a function addf that addstwo numbers from two invocations 
       Func<double, double> addf(double a)
       {
-        double innerAddFunction(double b)
+        return (double b) =>
         {
-          return add(a, b); // first rule of functional programming
+          return add(a, b); // first rule of functional programming :) reuse the functions
           // or return a + b
         };
 
-        return innerAddFunction;
+        //return innerAddFunction;
       }
 
       log(addf(3)(4));  // 7
