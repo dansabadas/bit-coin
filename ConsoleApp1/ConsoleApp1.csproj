@@ -114,7 +114,7 @@
       <Version>4.2.4</Version>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
-      <Version>12.0.2</Version>
+      <Version>13.0.2</Version>
     </PackageReference>
     <PackageReference Include="QBitNinja.Client">
       <Version>1.0.3.50</Version>
